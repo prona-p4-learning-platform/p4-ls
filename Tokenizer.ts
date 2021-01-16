@@ -24,19 +24,20 @@ const WHITESPACE = createToken({
 const SEMICOLON = createToken({
   name: "SEMICOLON",
   pattern: /;/,
-  group: Lexer.SKIPPED,
 });
 const OPEN_BRACE = createToken({
   name: "OPEN_BRACE",
   pattern: /\{/,
-  group: Lexer.SKIPPED,
 });
 const CLOSE_BRACE = createToken({
   name: "CLOSE_BRACE",
   pattern: /\}/,
-  group: Lexer.SKIPPED,
 });
-export default new Lexer([
+const DOT = createToken({
+  name: "DOT",
+  pattern: /\./,
+});
+export const tokens = {
   APPLY,
   KEY,
   ACTIONS,
@@ -54,4 +55,6 @@ export default new Lexer([
   SEMICOLON,
   OPEN_BRACE,
   CLOSE_BRACE,
-]);
+  DOT,
+};
+export default new Lexer(Object.values(tokens));
