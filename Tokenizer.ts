@@ -14,9 +14,30 @@ const STRING_LITERAL = createToken({
 const CONST = createToken({ name: "CONST", pattern: /const/ });
 const KEY = createToken({ name: "KEY", pattern: /key/ });
 const INOUT = createToken({ name: "INOUT", pattern: /inout/ });
+const DEFAULT = createToken({ name: "DEFAULT", pattern: /default/ });
+const DONTCARE = createToken({ name: "DONTCARE", pattern: /dontcare/ });
+const MASK = createToken({ name: "MASK", pattern: /mask/ });
+const RANGE = createToken({ name: "RANGE", pattern: /range/ });
+const OPEN_SQUARE_BRACKET = createToken({
+  name: "OPEN_SQUARE_BRACKET",
+  pattern: /\[/,
+});
+const CLOSE_SQUARE_BRACKET = createToken({
+  name: "CLOSE_SQUARE_BRACKET",
+  pattern: /\]/,
+});
+const ACTIONS = createToken({ name: "ACTIONS", pattern: /actions/ });
+const ACTION = createToken({
+  name: "ACTION",
+  pattern: /action/,
+  longer_alt: ACTIONS,
+});
+const TABLE = createToken({ name: "TABLE", pattern: /table/ });
+const ENTRIES = createToken({ name: "ENTRIES", pattern: /entries/ });
+const COLON = createToken({ name: "COLON", pattern: /:/ });
 const IN = createToken({ name: "IN", pattern: /in/ });
 const OUT = createToken({ name: "OUT", pattern: /out/ });
-const ACTIONS = createToken({ name: "ACTIONS", pattern: /actions/ });
+const CONTROL = createToken({ name: "CONTROL", pattern: /control/ });
 const STATE = createToken({ name: "STATE", pattern: /state/ });
 const TRANSITION = createToken({ name: "TRANSITION", pattern: /transition/ });
 const PARSER = createToken({ name: "PARSER", pattern: /parser/ });
@@ -55,12 +76,44 @@ const CLOSE_BRACE = createToken({
   name: "CLOSE_BRACE",
   pattern: /\}/,
 });
+const IF = createToken({
+  name: "IF",
+  pattern: /if/,
+});
+const ELSE = createToken({
+  name: "ELSE",
+  pattern: /else/,
+});
 const DOT = createToken({
   name: "DOT",
   pattern: /\./,
 });
+
+const EXIT = createToken({
+  name: "EXIT",
+  pattern: /exit/,
+});
+
+const RETURN = createToken({
+  name: "RETURN",
+  pattern: /return/,
+});
 export const tokens = {
+  DEFAULT,
+  DONTCARE,
+  MASK,
+  CONTROL,
   APPLY,
+  RETURN,
+  EXIT,
+  ACTIONS,
+  ACTION,
+  IF,
+  ELSE,
+  TABLE,
+  ENTRIES,
+  RANGE,
+  COLON,
   INOUT,
   IN,
   OUT,
@@ -75,11 +128,12 @@ export const tokens = {
   STRING_LITERAL,
   PARSER,
   CONST,
-  ACTIONS,
   STATE,
   TYPEDEF,
   OPEN_BRACKET,
   CLOSE_BRACKET,
+  CLOSE_SQUARE_BRACKET,
+  OPEN_SQUARE_BRACKET,
   TYPE,
   HEADER,
   BIT,
