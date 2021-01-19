@@ -102,7 +102,7 @@ class SelectParser extends CstParser {
     this.OR([
       {
         ALT: () => {
-          this.SUBRULE(this.typeName);
+          this.SUBRULE(this.prefixedType);
         },
       },
       {
@@ -111,10 +111,6 @@ class SelectParser extends CstParser {
         },
       },
     ]);
-  });
-
-  private typeName = this.RULE("typeName", () => {
-    this.SUBRULE(this.prefixedType);
   });
 
   private prefixedType = this.RULE("prefixedType", () => {
@@ -295,6 +291,7 @@ class SelectParser extends CstParser {
   });
 
   private instantiation = this.RULE("instantiation", () => {
+    this.SUBRULE(this.typeRef);
     this.CONSUME(tokens.OPEN_BRACE);
     this.SUBRULE(this.argumentList);
     this.CONSUME(tokens.CLOSE_BRACE);
@@ -432,12 +429,7 @@ class SelectParser extends CstParser {
     this.OR([
       {
         ALT: () => {
-          this.SUBRULE(this.assigmentOrMethodCallStatement);
-        },
-      },
-      {
-        ALT: () => {
-          this.SUBRULE(this.directApplication);
+          this.SUBRULE(this.assigmentOrMethodCallOrInstantiation);
         },
       },
       {
@@ -468,6 +460,71 @@ class SelectParser extends CstParser {
     ]);
   });
 
+  private assigmentOrMethodCallOrInstantiation = this.RULE(
+    "assigmentOrMethodCallOrInstantiation",
+    () => {
+      this.OR([
+        {
+          ALT: () => {
+            this.CONSUME(tokens.IDENTIFIER);
+            this.OR([
+              {
+                ALT: () => {
+                  this.CONSUME(tokens.OPEN_BRACE);
+                  this.SUBRULE(this.argumentList);
+                  this.CONSUME(tokens.CLOSE_BRACE);
+                  this.SUBRULE(this.name);
+                  this.CONSUME(tokens.SEMICOLON);
+                },
+              },
+              {
+                ALT: () => {
+                  this.MANY(() => {
+                    this.OR([
+                      {
+                        ALT: () => {
+                          this.CONSUME(tokens.DOT);
+                          this.SUBRULE(this.name);
+                        },
+                      },
+                      {
+                        ALT: () => {
+                          this.CONSUME(tokens.OPEN_BRACKET);
+                          this.SUBRULE(this.expression);
+                          this.CONSUME(tokens.CLOSE_BRACKET);
+                        },
+                      },
+                      {
+                        ALT: () => {
+                          this.CONSUME(tokens.OPEN_BRACKET);
+                          this.SUBRULE(this.expression);
+                          this.CONSUME(tokens.COLON);
+                          this.SUBRULE(this.expression);
+                          this.CONSUME(tokens.CLOSE_BRACKET);
+                        },
+                      },
+                    ]);
+                  });
+                  this.CONSUME(tokens.OPEN_BRACE);
+                  this.SUBRULE(this.argumentList);
+                  this.CONSUME(tokens.CLOSE_BRACE);
+                  this.SUBRULE(this.name);
+                  this.CONSUME(tokens.SEMICOLON);
+                },
+              },
+            ]);
+          },
+        },
+        {
+          ALT: () => {
+            this.CONSUME(tokens.DOT);
+            this.CONSUME(tokens.IDENTIFIER);
+          },
+        },
+      ]);
+    }
+  );
+
   private exitStatement = this.RULE("exitStatement", () => {
     this.CONSUME(tokens.EXIT);
     this.CONSUME(tokens.SEMICOLON);
@@ -480,12 +537,12 @@ class SelectParser extends CstParser {
   });
 
   private switchStatement = this.RULE("switchStatement", () => {
-    this.CONSUME(tokens.EXIT);
+    this.CONSUME(tokens.SWITCH);
     this.CONSUME(tokens.SEMICOLON);
   });
 
   private directApplication = this.RULE("directApplication", () => {
-    this.SUBRULE(this.typeName);
+    this.SUBRULE(this.prefixedType);
     this.CONSUME(tokens.DOT);
     this.CONSUME(tokens.APPLY);
     this.CONSUME(tokens.OPEN_BRACE);
@@ -542,39 +599,33 @@ class SelectParser extends CstParser {
   );
 
   private lvalue = this.RULE("lvalue", () => {
-    this.OR([
-      {
-        ALT: () => {
-          this.SUBRULE(this.prefixedNonTypeName);
-          this.MANY(() => {
-            this.OR2([
-              {
-                ALT: () => {
-                  this.CONSUME(tokens.DOT);
-                  this.SUBRULE(this.name);
-                },
-              },
-              {
-                ALT: () => {
-                  this.CONSUME(tokens.OPEN_SQUARE_BRACKET);
-                  this.SUBRULE(this.expression);
-                  this.CONSUME(tokens.CLOSE_SQUARE_BRACKET);
-                },
-              },
-              {
-                ALT: () => {
-                  this.CONSUME2(tokens.OPEN_SQUARE_BRACKET);
-                  this.SUBRULE2(this.expression);
-                  this.CONSUME(tokens.COLON);
-                  this.SUBRULE3(this.expression);
-                  this.CONSUME2(tokens.CLOSE_SQUARE_BRACKET);
-                },
-              },
-            ]);
-          });
+    this.SUBRULE(this.prefixedNonTypeName);
+    this.MANY(() => {
+      this.OR2([
+        {
+          ALT: () => {
+            this.CONSUME(tokens.DOT);
+            this.SUBRULE(this.name);
+          },
         },
-      },
-    ]);
+        {
+          ALT: () => {
+            this.CONSUME(tokens.OPEN_SQUARE_BRACKET);
+            this.SUBRULE(this.expression);
+            this.CONSUME(tokens.CLOSE_SQUARE_BRACKET);
+          },
+        },
+        {
+          ALT: () => {
+            this.CONSUME2(tokens.OPEN_SQUARE_BRACKET);
+            this.SUBRULE2(this.expression);
+            this.CONSUME(tokens.COLON);
+            this.SUBRULE3(this.expression);
+            this.CONSUME2(tokens.CLOSE_SQUARE_BRACKET);
+          },
+        },
+      ]);
+    });
   });
 
   private typeArgumentList = this.RULE("typeArgumentList", () => {
@@ -596,12 +647,51 @@ class SelectParser extends CstParser {
       },
       {
         ALT: () => {
-          this.SUBRULE(this.typeRef);
+          this.CONSUME(tokens.APPLY); //nonTypeName
         },
       },
       {
         ALT: () => {
-          this.CONSUME(tokens.IDENTIFIER);
+          this.CONSUME(tokens.KEY); //nonTypeName
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(tokens.ACTIONS); //nonTypeName
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(tokens.STATE); //nonTypeName
+        },
+      },
+
+      {
+        ALT: () => {
+          this.CONSUME(tokens.ENTRIES); //nonTypeName
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(tokens.TYPE); //nonTypeName
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(tokens.IDENTIFIER); //nonTypeName wenn keine weitere folgen
+          // rest von typeRef
+        },
+      },
+
+      {
+        ALT: () => {
+          this.SUBRULE(this.baseType);
+        },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE(this.dotPrefix);
+          this.CONSUME2(tokens.IDENTIFIER); //treat as type identifier
         },
       },
     ]);
@@ -755,6 +845,20 @@ class SelectParser extends CstParser {
     this.OR([
       {
         ALT: () => {
+          this.SUBRULE2(this.expression);
+          this.CONSUME(tokens.MASK);
+          this.SUBRULE3(this.expression);
+        },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE4(this.expression);
+          this.CONSUME(tokens.RANGE);
+          this.SUBRULE5(this.expression);
+        },
+      },
+      {
+        ALT: () => {
           this.SUBRULE(this.expression);
         },
       },
@@ -766,20 +870,6 @@ class SelectParser extends CstParser {
       {
         ALT: () => {
           this.CONSUME(tokens.DONTCARE);
-        },
-      },
-      {
-        ALT: () => {
-          this.SUBRULE2(this.expression);
-          this.CONSUME(tokens.MASK);
-          this.SUBRULE3(this.expression);
-        },
-      },
-      {
-        ALT: () => {
-          this.SUBRULE4(this.expression);
-          this.CONSUME(tokens.RANGE);
-          this.SUBRULE5(this.expression);
         },
       },
     ]);

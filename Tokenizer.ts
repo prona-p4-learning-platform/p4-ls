@@ -7,6 +7,7 @@ const IDENTIFIER = createToken({
 const APPLY = createToken({ name: "APPLY", pattern: /apply/ });
 const TRUE = createToken({ name: "TRUE", pattern: /true/ });
 const FALSE = createToken({ name: "FALSE", pattern: /false/ });
+const SWITCH = createToken({ name: "SWITCH", pattern: /switch/ });
 const STRING_LITERAL = createToken({
   name: "STRING_LITERAL",
   pattern: /\".*\"/,
@@ -104,6 +105,7 @@ export const tokens = {
   MASK,
   CONTROL,
   APPLY,
+  SWITCH,
   RETURN,
   EXIT,
   ACTIONS,
