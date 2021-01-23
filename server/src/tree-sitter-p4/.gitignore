@@ -1,0 +1,7 @@
+binding.gyp
+index.js
+build
+parser.exp
+parser.lib
+parser.obj
+src
