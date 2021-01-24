@@ -15,7 +15,8 @@ module.exports = grammar({
         $.constantDeclaration,
         $.typeDeclaration,
         $.parserDeclaration,
-        $.controlDeclaration
+        $.controlDeclaration,
+        $.preproc_include
       ),
     constantDeclaration: ($) =>
       seq("const", $.typeRef, $.name, "=", $.initializer, ";"),
@@ -130,5 +131,15 @@ module.exports = grammar({
       ),
     IDENTIFIER: ($) => /[a-zA-Z][a-zA-Z0-9_]*/,
     INTEGER: ($) => /(0x)?[0-9]+/,
+    STRING_LITERAL: ($) => /[^\\"\n]+/,
+    SYSTEM_LIB_STRING: ($) =>
+      token(seq("<", repeat(choice(/[^>\n]/, "\\>")), ">")),
+    path: ($) => $.STRING_LITERAL,
+    preproc_include: ($) =>
+      seq("#", /[ \t]*/, choice($.STRING_LITERAL, $.SYSTEM_LIB_STRING), "\n"),
   },
 });
+
+function preprocessor(command) {
+  return alias(new RegExp("#[ \t]*" + command), "#" + command);
+}
