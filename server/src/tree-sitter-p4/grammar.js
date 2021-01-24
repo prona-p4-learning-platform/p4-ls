@@ -1,9 +1,15 @@
 module.exports = grammar({
   name: "P4_16",
-
+  extras: ($) => [/\s|\\\r?\n/, $.comment],
   rules: {
-    // TODO: add the actual grammar rules
     source_file: ($) => repeat($.declaration),
+    comment: ($) =>
+      token(
+        prec(
+          1,
+          choice(seq("//", /.*/), seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/"))
+        )
+      ),
     declaration: ($) =>
       choice(
         $.constantDeclaration,
