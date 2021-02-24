@@ -1,15 +1,12 @@
-# LSP Example
+# A Language Server for the P4 programming language
 
-Heavily documented sample code for https://code.visualstudio.com/api/language-extensions/language-server-extension-guide
+Still heavily work in progress. It uses tree-sitter as a dependency and therefore is not plug and play at the moment.
+Also the repository currently implements the Definition-Provider on top of the Parse Tree and an AST-Construction function on top of the Parse Tree aswell.
+Implemented LSP features do not use AST at all.
 
-## Functionality
+As a first milestone, ut is supposed to support the basic examples of the https://github.com/p4lang/tutorials repository.
 
-This Language Server works for plain text file. It has the following language features:
-
-- Completions
-- Diagnostics regenerated on each file change or configuration change
-
-It also includes an End-to-End test.
+This repository is based on the official Microsoft LSP example repository.
 
 ## Structure
 
@@ -17,7 +14,7 @@ It also includes an End-to-End test.
 .
 ├── client // Language Client
 │   ├── src
-│   │   ├── test // End to End tests for Language Client / Server
+│   │   |
 │   │   └── extension.ts // Language Client entry point
 ├── package.json // The extension manifest.
 └── server // Language Server
@@ -34,6 +31,4 @@ It also includes an End-to-End test.
 - Select `Launch Client` from the drop down.
 - Run the launch config.
 - If you want to debug the server as well use the launch configuration `Attach to Server`
-- In the [Extension Development Host] instance of VSCode, open a document in 'plain text' language mode.
-  - Type `j` or `t` to see `Javascript` and `TypeScript` completion.
-  - Enter text content such as `AAA aaa BBB`. The extension will emit diagnostics for all words in all-uppercase.
+- In the [Extension Development Host] instance of VSCode, open a P4 source file.

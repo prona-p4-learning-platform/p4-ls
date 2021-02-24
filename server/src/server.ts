@@ -16,8 +16,11 @@ import {
   TextDocumentSyncKind,
   InitializeResult,
 } from "vscode-languageserver/node";
-import { parseSource } from "./Parser";
+import TextdocumentManager from "./TextDocumentManager";
+import DefinitionProviderCreator from "./DefinitionProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
+
+const documentManager = new TextdocumentManager();
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -54,6 +57,7 @@ connection.onInitialize((params: InitializeParams) => {
       completionProvider: {
         resolveProvider: true,
       },
+      definitionProvider: true,
     },
   };
   if (hasWorkspaceFolderCapability) {
@@ -136,13 +140,11 @@ documents.onDidChangeContent((change) => {
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-  // In this simple example we get the settings for every validate run.
   let settings = await getDocumentSettings(textDocument.uri);
   console.log("validating.");
-  // The validator creates diagnostics for all uppercase words length 2 and more
   let diagnostics: Diagnostic[] = [];
   try {
-    diagnostics = parseSource(textDocument.getText());
+    documentManager.update(textDocument);
   } catch (ex) {
     console.log(ex);
   }
@@ -155,6 +157,8 @@ connection.onDidChangeWatchedFiles((_change) => {
   // Monitored files have change in VSCode
   connection.console.log("We received an file change event");
 });
+
+connection.onDefinition(DefinitionProviderCreator(documentManager));
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
