@@ -141,7 +141,6 @@ documents.onDidChangeContent((change) => {
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
   let settings = await getDocumentSettings(textDocument.uri);
-  console.log("validating.");
   let diagnostics: Diagnostic[] = [];
   try {
     documentManager.update(textDocument);

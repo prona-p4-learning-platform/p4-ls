@@ -1,0 +1,22 @@
+{
+  "scopeName": "source.p4",
+  "patterns": [{ "include": "#comment" }],
+  "repository": {
+    "comment": {
+      "patterns": [
+        { "include": "#blockcomment" },
+        { "include": "#doubleslashcomment" }
+      ]
+    },
+    "blockcomment": {
+      "begin": "/\\*",
+      "end": "\\*/",
+      "name": "comment.block.p4"
+    },
+    "doubleslashcomment": {
+      "begin": "//",
+      "end": "\\n",
+      "name": "comment.block.p4"
+    }
+  }
+}
