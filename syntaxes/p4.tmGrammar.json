@@ -1,6 +1,6 @@
 {
   "scopeName": "source.p4",
-  "patterns": [{ "include": "#comment" }],
+  "patterns": [{ "include": "#comment" }, { "include": "#keywords" }],
   "repository": {
     "comment": {
       "patterns": [
@@ -17,6 +17,25 @@
       "begin": "//",
       "end": "\\n",
       "name": "comment.block.p4"
+    },
+    "keywords": {
+      "patterns": [
+        { "include": "#bit" },
+        { "include": "#constant" },
+        { "include": "#control" }
+      ]
+    },
+    "bit": {
+      "match": "bit",
+      "name": "keyword.constant.bit.p4"
+    },
+    "constant": {
+      "match": "\\b(header|struct)\\s",
+      "name": "keyword.constant.p4"
+    },
+    "control": {
+      "match": "\\b(table|parser|state|transition|apply|control|inout|out|in|action)\\s",
+      "name": "keyword.constant.p4"
     }
   }
 }

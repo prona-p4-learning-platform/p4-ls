@@ -1,18 +1,31 @@
 import {
   Definition,
+  Diagnostic,
   Position,
   TextDocumentPositionParams,
 } from "vscode-languageserver";
 import { Range, TextDocument } from "vscode-languageserver-textdocument";
 import ScopeNode from "./node/ScopeNode";
 import { parseSource } from "./Parser";
-import Parser from "tree-sitter";
+import Parser, { SyntaxNode } from "tree-sitter";
+
+const nodeToDiagnostic = (node: SyntaxNode): Diagnostic => ({
+  message: "test",
+  range: {
+    start: {
+      line: node.startPosition.row,
+      character: node.startPosition.column,
+    },
+    end: { line: node.endPosition.row, character: node.endPosition.column },
+  },
+});
+
 export default class TextDocumentManager {
   private documents = new Map<string, TextDocument>();
   private scopeRepresentation = new Map<string, ScopeNode>();
   private parseTree = new Map<string, Parser.SyntaxNode>();
 
-  update(textDocument: TextDocument) {
+  update(textDocument: TextDocument): Diagnostic[] {
     const { uri } = textDocument;
     const { parseTreeRoot, scopeTreeRoot } = parseSource(
       textDocument.getText()
@@ -22,6 +35,10 @@ export default class TextDocumentManager {
     if (this.documents.has(uri) === false) {
       this.documents.set(uri, textDocument);
     }
+    const a = [
+      ...parseTreeRoot.descendantsOfType("ERROR").map(nodeToDiagnostic),
+    ];
+    return a;
   }
 
   private rangeFromNode(node: Parser.SyntaxNode): Range {

@@ -18,6 +18,7 @@ import {
 } from "vscode-languageserver/node";
 import TextdocumentManager from "./TextDocumentManager";
 import DefinitionProviderCreator from "./DefinitionProvider";
+import HoverProviderCreator from "./HoverProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 const documentManager = new TextdocumentManager();
@@ -58,6 +59,7 @@ connection.onInitialize((params: InitializeParams) => {
         resolveProvider: true,
       },
       definitionProvider: true,
+      hoverProvider:true
     },
   };
   if (hasWorkspaceFolderCapability) {
@@ -143,7 +145,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
   let settings = await getDocumentSettings(textDocument.uri);
   let diagnostics: Diagnostic[] = [];
   try {
-    documentManager.update(textDocument);
+    diagnostics = [...documentManager.update(textDocument)];
   } catch (ex) {
     console.log(ex);
   }
@@ -158,6 +160,7 @@ connection.onDidChangeWatchedFiles((_change) => {
 });
 
 connection.onDefinition(DefinitionProviderCreator(documentManager));
+connection.onHover(HoverProviderCreator(documentManager));
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(

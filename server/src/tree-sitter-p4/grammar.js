@@ -16,8 +16,10 @@ module.exports = grammar({
         $.typeDeclaration,
         $.parserDeclaration,
         $.controlDeclaration,
-        $.preproc_include
+        $.preproc_include,
+        $.instantiation
       ),
+    instantiation: $ => seq($.IDENTIFIER, '(', optional($.argumentList), ')', $.name, ";"),
     constantDeclaration: ($) =>
       seq("const", $.typeRef, $.name, "=", $.initializer, ";"),
     typeDeclaration: ($) =>
@@ -47,7 +49,7 @@ module.exports = grammar({
     statement: ($) => choice($.assignmentOrMethodCallStatement),
     assignmentOrMethodCallStatement: ($) =>
       choice(
-        seq($.lvalue, "(", optional(repeat($.argument)), ")", ";"),
+        seq($.lvalue, "(", optional($.argumentList), ")", ";"),
         seq($.lvalue, "=", $.expression, ";")
       ),
     controlLocalDeclaration: ($) =>
@@ -72,7 +74,7 @@ module.exports = grammar({
     nonTableKwName: ($) => choice($.IDENTIFIER, "apply", "state", "type"),
     keyElement: ($) => seq($.expression, ":", $.name, ";"),
     prefixedNonType: ($) => choice($.IDENTIFIER, seq(".", $.IDENTIFIER)),
-    argumentList: ($) => seq($.argument, repeat(seq(",", $.argument))),
+    argumentList: ($) => seq($.argument, optional(repeat(seq(",", $.argument)))),
     actionListElement: ($) =>
       choice(
         seq($.prefixedNonType, ";"),
@@ -111,14 +113,43 @@ module.exports = grammar({
     typeRef: ($) => choice($.baseType, $.typeName),
     baseType: ($) => choice("bit", seq("bit", "<", $.INTEGER, ">")),
     initializer: ($) => $.expression,
+    expressionList: $ => seq($.expression, repeat(seq(",", $.expression))),
     expression: ($) =>
       choice(
         $.IDENTIFIER,
+        $.TRUE,
+        $.FALSE,
+        $.INTEGER,
         seq(".", $.IDENTIFIER),
+        seq($.IDENTIFIER, ".", $.IDENTIFIER),
+        seq($.expression, '[', $.expression, ']'),
+        seq('{', optional($.expressionList), '}'),
+        seq($.expression, '[', $.expression, ':', $.expression , ']'),
         prec.left(2, seq($.expression, ".", $.name)),
         prec.left(1, seq($.IDENTIFIER, ".", $.IDENTIFIER)),
         prec.left(2, seq($.expression, "(", optional($.argumentList), ")")),
-        $.INTEGER
+        prec.left(1, seq($.expression, "*", $.expression)),
+        prec.left(1, seq($.expression, "/", $.expression)),
+        prec.left(1, seq($.expression, "%", $.expression)),
+        prec.left(1, seq($.expression, "+", $.expression)),
+        prec.left(1, seq($.expression, "-", $.expression)),
+        prec.left(1, seq($.expression, "|+|", $.expression)),
+        prec.left(1, seq($.expression, "|-|", $.expression)),
+        prec.left(1, seq($.expression, "<<", $.expression)),
+        prec.left(1, seq($.expression, ">>", $.expression)),
+        prec.left(1, seq($.expression, "<=", $.expression)),
+        prec.left(1, seq($.expression, ">=", $.expression)),     
+        prec.left(1, seq($.expression, "<", $.expression)),
+        prec.left(1, seq($.expression, ">", $.expression)),     
+        prec.left(1, seq($.expression, "!=", $.expression)),
+        prec.left(1, seq($.expression, "==", $.expression)),     
+        prec.left(1, seq($.expression, "&", $.expression)),     
+        prec.left(1, seq($.expression, "^", $.expression)),     
+        prec.left(1, seq($.expression, "|", $.expression)),     
+        prec.left(1, seq($.expression, "++", $.expression)),     
+        prec.left(1, seq($.expression, "&&", $.expression)),     
+        prec.left(1, seq($.expression, "||", $.expression)),     
+        prec.left(1, seq($.expression, "?", $.expression, ':',  $.expression))
       ),
     typeName: ($) => $.name,
     name: ($) => $.IDENTIFIER,
@@ -131,6 +162,8 @@ module.exports = grammar({
       ),
     IDENTIFIER: ($) => /[a-zA-Z][a-zA-Z0-9_]*/,
     INTEGER: ($) => /(0x)?[0-9]+/,
+    TRUE: $ => /true/,
+    FALSE: $ => /false/,
     STRING_LITERAL: ($) => /[^\\"\n]+/,
     SYSTEM_LIB_STRING: ($) =>
       token(seq("<", repeat(choice(/[^>\n]/, "\\>")), ">")),
