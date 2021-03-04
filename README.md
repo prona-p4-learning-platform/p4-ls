@@ -1,10 +1,10 @@
 # A Language Server for the P4 programming language
 
 Still heavily work in progress. It uses tree-sitter as a dependency and therefore is not plug and play at the moment.
-Also the repository currently implements the Definition-Provider on top of the Parse Tree and an AST-Construction function on top of the Parse Tree aswell.
+Also the repository currently implements the Definition and Hover Providers on top of the Parse Tree and an AST-Construction function on top of the Parse Tree aswell.
 Implemented LSP features do not use AST at all.
 
-As a first milestone, ut is supposed to support the basic examples of the https://github.com/p4lang/tutorials repository.
+As a first milestone, it is supposed to support the basic examples of the https://github.com/p4lang/tutorials repository.
 
 This repository is based on the official Microsoft LSP example repository.
 

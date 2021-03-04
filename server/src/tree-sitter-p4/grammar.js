@@ -1,6 +1,14 @@
 module.exports = grammar({
   name: "P4_16",
   extras: ($) => [/\s|\\\r?\n/, $.comment],
+  conflicts: ($) => [
+    [$.name, $.prefixedNonType],
+    [$.prefixedType, $.prefixedNonType],
+    [$.nonTypeName, $.name],
+    [$.prefixedType, $.expression],
+    [$.name, $.expression],
+    [$.nonTypeName, $.prefixedType],
+  ],
   rules: {
     source_file: ($) => repeat($.declaration),
     comment: ($) =>
@@ -17,10 +25,19 @@ module.exports = grammar({
         $.parserDeclaration,
         $.controlDeclaration,
         $.preproc_include,
-        $.instantiation
+        $.instantiation,
+        $.errorDeclaration
       ),
     instantiation: ($) =>
-      seq($.IDENTIFIER, "(", optional($.argumentList), ")", $.name, ";"),
+      seq(
+        repeat($.annotation),
+        $.typeRef,
+        "(",
+        optional($.argumentList),
+        ")",
+        $.name,
+        ";"
+      ),
     constantDeclaration: ($) =>
       seq("const", $.typeRef, $.name, "=", $.initializer, ";"),
     typeDeclaration: ($) =>
@@ -31,11 +48,13 @@ module.exports = grammar({
       seq("header", $.name, "{", optional(repeat($.structField)), "}"),
     structTypeDeclaration: ($) =>
       seq("struct", $.name, "{", optional(repeat($.structField)), "}"),
+    errorDeclaration: ($) => seq("error", "{", optional($.identifierList), "}"),
+    identifierList: ($) => seq($.name, repeat(seq(",", $.name))),
     conditionalStatement: ($) =>
       choice(
-        prec(2, seq("if", "(", $.expression, ")", $.statement)),
+        prec(1, seq("if", "(", $.expression, ")", $.statement)),
         prec(
-          1,
+          2,
           seq("if", "(", $.expression, ")", $.statement, "else", $.statement)
         )
       ),
@@ -54,7 +73,16 @@ module.exports = grammar({
       ),
     blockStatement: ($) =>
       seq("{", optional(repeat($.statementOrDeclaration)), "}"),
-    statementOrDeclaration: ($) => choice($.constantDeclaration, $.statement),
+    statementOrDeclaration: ($) =>
+      choice(
+        $.constantDeclaration,
+        $.statement,
+        $.variableDeclaration,
+        $.instantiation
+      ),
+    instantiation: ($) =>
+      seq($.typeRef, "(", optional($.argumentList), ")", $.name, ";"),
+    variableDeclaration: ($) => seq($.typeRef, $.name, ";"),
     statement: ($) =>
       choice(
         $.assignmentOrMethodCallStatement,
@@ -64,10 +92,38 @@ module.exports = grammar({
     assignmentOrMethodCallStatement: ($) =>
       choice(
         seq($.lvalue, "(", optional($.argumentList), ")", ";"),
+        seq(
+          $.lvalue,
+          "<",
+          optional($.typeArgumentList),
+          ">",
+          "(",
+          optional($.argumentList),
+          ")",
+          ";"
+        ),
         seq($.lvalue, "=", $.expression, ";")
       ),
+    nonTypeName: ($) =>
+      choice(
+        $.IDENTIFIER,
+        "apply",
+        "key",
+        "actions",
+        "state",
+        "entries",
+        "type"
+      ),
+    typeArgumentList: ($) => seq($.typeArg, repeat(seq(",", $.typeArg))),
+    typeArg: ($) => choice("dontcare", $.typeRef, $.nonTypeName),
     controlLocalDeclaration: ($) =>
-      choice($.constantDeclaration, $.actionDeclaration, $.tableDeclaration),
+      choice(
+        $.constantDeclaration,
+        $.actionDeclaration,
+        $.tableDeclaration,
+        $.instantiation,
+        $.variableDeclaration
+      ),
     actionDeclaration: ($) =>
       seq(
         "action",
@@ -83,8 +139,16 @@ module.exports = grammar({
       choice(
         seq("key", "=", "{", optional(repeat($.keyElement)), "}"),
         seq("actions", "=", "{", optional(repeat($.actionListElement)), "}"),
-        seq($.nonTableKwName, "=", $.initializer, ";")
+        seq($.nonTableKwName, "=", $.initializer, ";"),
+        seq("const", $.nonTableKwName, "=", $.initializer, ";"),
+        seq("const", "entries", "=", "{", repeat($.entry), "}")
       ),
+    actionRef: ($) =>
+      choice(
+        $.prefixedNonType,
+        seq($.prefixedNonType, "(", optional($.argumentList), ")")
+      ),
+    entry: ($) => seq($.keysetExpression, ":", $.actionRef, ";"),
     nonTableKwName: ($) => choice($.IDENTIFIER, "apply", "state", "type"),
     keyElement: ($) => seq($.expression, ":", $.name, ";"),
     prefixedNonType: ($) => choice($.IDENTIFIER, seq(".", $.IDENTIFIER)),
@@ -154,10 +218,37 @@ module.exports = grammar({
       seq(optional(choice("inout", "out", "in")), $.typeRef, $.name),
     typedefDeclaration: ($) => seq("typedef", $.typeRef, $.name, ";"),
     structField: ($) => seq($.typeRef, $.name, ";"),
-    typeRef: ($) => choice($.baseType, $.typeName),
-    baseType: ($) => choice("bit", seq("bit", "<", $.INTEGER, ">")),
+    specializedType: ($) =>
+      seq($.prefixedType, "<", optional($.typeArgumentList), ">"),
+    prefixedType: ($) => choice($.IDENTIFIER, seq(".", $.IDENTIFIER)),
+    typeRef: ($) =>
+      choice(
+        $.baseType,
+        $.typeName,
+        $.specializedType,
+        $.headerStackType,
+        $.tupleType
+      ),
+    tupleType: ($) => seq("tuple", "<", optional($.typeArgumentList), ">"),
+    headerStackType: ($) => seq($.typeName, "[", $.expression, "]"),
+    baseType: ($) =>
+      choice(
+        "bit",
+        "bool",
+        "error",
+        "int",
+        seq("bit", "<", $.INTEGER, ">"),
+        seq("int", "<", $.INTEGER, ">"),
+        seq("varbit", "<", $.INTEGER, ">"),
+        seq("bit", "<", "(", $.expression, ")", ">"),
+        seq("int", "<", "(", $.expression, ")", ">"),
+        seq("varbit", "<", "(", $.expression, ")", ">")
+      ),
     initializer: ($) => $.expression,
     expressionList: ($) => seq($.expression, repeat(seq(",", $.expression))),
+    realTypeArgumentList: ($) =>
+      seq($.realTypeArg, repeat(seq(",", $.typeArg))),
+    realTypeArg: ($) => choice("dontcare", $.typeRef),
     expression: ($) =>
       choice(
         $.IDENTIFIER,
@@ -169,6 +260,15 @@ module.exports = grammar({
         seq($.expression, "[", $.expression, "]"),
         seq("{", optional($.expressionList), "}"),
         seq($.expression, "[", $.expression, ":", $.expression, "]"),
+        seq(
+          $.expression,
+          "<",
+          $.realTypeArgumentList,
+          ">",
+          "(",
+          optional($.argumentList),
+          ")"
+        ),
         prec.left(2, seq($.expression, ".", $.name)),
         prec.left(1, seq($.IDENTIFIER, ".", $.IDENTIFIER)),
         prec.left(2, seq($.expression, "(", optional($.argumentList), ")")),
@@ -193,9 +293,10 @@ module.exports = grammar({
         prec.left(1, seq($.expression, "++", $.expression)),
         prec.left(1, seq($.expression, "&&", $.expression)),
         prec.left(1, seq($.expression, "||", $.expression)),
-        prec.left(1, seq($.expression, "?", $.expression, ":", $.expression))
+        prec.left(1, seq($.expression, "?", $.expression, ":", $.expression)),
+        prec.left(seq("(", $.typeRef, ")", $.expression))
       ),
-    typeName: ($) => $.name,
+    typeName: ($) => $.prefixedType,
     name: ($) => $.IDENTIFIER,
     lvalue: ($) =>
       choice(

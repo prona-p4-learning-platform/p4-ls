@@ -1,6 +1,7 @@
 import {
   Definition,
   Diagnostic,
+  Hover,
   Position,
   TextDocumentPositionParams,
 } from "vscode-languageserver";
@@ -106,5 +107,25 @@ export default class TextDocumentManager {
       uri: doc!.uri,
       range,
     };
+  }
+
+  provideHover(_textDocumentPosition: TextDocumentPositionParams): Hover {
+    const node = this.getNodeAtPosition(
+      _textDocumentPosition.position,
+      _textDocumentPosition.textDocument.uri
+    );
+    if (node) {
+      const rootScope = this.scopeRepresentation.get(
+        _textDocumentPosition.textDocument.uri
+      );
+      const definitionNode = rootScope!.findClosestDefinitionForIdentifier(
+        node.text,
+        _textDocumentPosition.position
+      );
+      if (definitionNode) {
+        return { contents: { language: "P4", value: definitionNode.text } };
+      }
+    }
+    return { contents: "" };
   }
 }

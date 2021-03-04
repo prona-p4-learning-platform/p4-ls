@@ -4,5 +4,6 @@ import type TextDocumentManager from "./TextDocumentManager";
 export default (docManager: TextDocumentManager) => (
   _textDocumentPosition: HoverParams
 ): Hover => {
-  return { contents: "Test" };
+  const result = docManager.provideHover(_textDocumentPosition);
+  return result;
 };
