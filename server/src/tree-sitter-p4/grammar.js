@@ -8,6 +8,7 @@ module.exports = grammar({
     [$.prefixedType, $.expression],
     [$.name, $.expression],
     [$.nonTypeName, $.prefixedType],
+    [$.typeOrVoid, $.prefixedType],
   ],
   rules: {
     source_file: ($) => repeat($.declaration),
@@ -21,13 +22,46 @@ module.exports = grammar({
     declaration: ($) =>
       choice(
         $.constantDeclaration,
+        $.externDeclaration,
         $.typeDeclaration,
         $.parserDeclaration,
         $.controlDeclaration,
         $.preproc_include,
         $.instantiation,
-        $.errorDeclaration
+        $.errorDeclaration,
+        $.matchKindDeclaration,
+        $.functionDeclaration
       ),
+    externDeclaration: ($) =>
+      choice(
+        seq(
+          "extern",
+          $.nonTypeName,
+          optional($.typeParameters),
+          "{",
+          repeat($.methodPrototype),
+          "}"
+        ),
+        seq("extern", $.functionPrototype, ";")
+      ),
+    functionDeclaration: ($) => seq($.functionPrototype, $.blockStatement),
+    functionPrototype: ($) =>
+      seq(
+        $.typeOrVoid,
+        $.name,
+        optional($.typeParameters),
+        "(",
+        $.parameterList,
+        ")"
+      ),
+    methodPrototype: ($) =>
+      choice(
+        seq($.functionPrototype, ";"),
+        seq($.IDENTIFIER, "(", optional($.parameterList), ")", ";")
+      ),
+    typeOrVoid: ($) => choice($.typeRef, "void", $.IDENTIFIER),
+    typeParameters: ($) => seq("<", $.typeParameterList, ">"),
+    typeParameterList: ($) => seq($.name, repeat(seq(",", $.name))),
     instantiation: ($) =>
       seq(
         repeat($.annotation),
@@ -48,8 +82,18 @@ module.exports = grammar({
       seq("header", $.name, "{", optional(repeat($.structField)), "}"),
     structTypeDeclaration: ($) =>
       seq("struct", $.name, "{", optional(repeat($.structField)), "}"),
+    switchStatement: ($) =>
+      seq("switch", "(", $.expression, ")", "{", repeat($.switchCase), "}"),
+    switchCase: ($) =>
+      choice(
+        seq($.switchLabel, ":", $.blockStatement),
+        seq($.switchLabel, ":")
+      ),
+    switchLabel: ($) => choice($.name, "default"),
     errorDeclaration: ($) => seq("error", "{", optional($.identifierList), "}"),
     identifierList: ($) => seq($.name, repeat(seq(",", $.name))),
+    directApplication: ($) =>
+      seq($.typeName, ".", "apply", "(", $.argumentList, ")", ";"),
     conditionalStatement: ($) =>
       choice(
         prec(1, seq("if", "(", $.expression, ")", $.statement)),
@@ -57,6 +101,69 @@ module.exports = grammar({
           2,
           seq("if", "(", $.expression, ")", $.statement, "else", $.statement)
         )
+      ),
+    annotation: ($) =>
+      choice(
+        seq("@", $.name),
+        seq("@", $.name, "(", $.annotationBody, ")"),
+        seq("@", $.name, "[", $.structuredAnnotationBody, "]")
+      ),
+    kvList: ($) => choice($.kvPair, seq($.kvList, ",", $.kvPair)),
+    kvPair: ($) => seq($.name, "=", $.expression),
+    structuredAnnotationBody: ($) => choice($.expressionList, $.kvList),
+    annotationBody: ($) =>
+      choice(
+        repeat1(seq($.annotationBody, "(", $.annotationBody, ")")),
+        repeat1(seq($.annotationBody, $.annotationToken))
+      ),
+    annotationToken: ($) =>
+      choice(
+        "abstract",
+        "action",
+        "actions",
+        "apply",
+        "bool",
+        "const",
+        "control",
+        "default",
+        "else",
+        "entries",
+        "enum",
+        "error",
+        "exit",
+        "extern",
+        "false",
+        "header",
+        "header_union",
+        "if",
+        "in",
+        "inout",
+        "int",
+        "key",
+        "match_kind",
+        "type",
+        "out",
+        "parser",
+        "package",
+        "pragma",
+        "return",
+        "select",
+        "state",
+        "struct",
+        "switch",
+        "table",
+        "this",
+        "transition",
+        "true",
+        "tuple",
+        "typedef",
+        "varbit",
+        "valueset",
+        "void",
+        "_",
+        $.IDENTIFIER,
+        $.STRING_LITERAL,
+        $.INTEGER
       ),
     controlDeclaration: ($) =>
       seq(
@@ -87,8 +194,11 @@ module.exports = grammar({
       choice(
         $.assignmentOrMethodCallStatement,
         $.conditionalStatement,
-        $.blockStatement
+        $.blockStatement,
+        $.switchStatement,
+        $.directApplication
       ),
+    matchKindDeclaration: ($) => seq("match_kind", "{", $.identifierList, "}"),
     assignmentOrMethodCallStatement: ($) =>
       choice(
         seq($.lvalue, "(", optional($.argumentList), ")", ";"),
