@@ -8,6 +8,17 @@ As a first milestone, it is supposed to support the basic examples of the https:
 
 This repository is based on the official Microsoft LSP example repository.
 
+## Build the language server for standalone-use with NodeJS
+
+You can use the language server component of this repository without the vscode-extension. Make sure you satisfy the dependencies of [node-gyp](https://github.com/nodejs/node-gyp) for your operating system. Afterwards,
+
+- `npm install` in the root of this repository
+- `npm run compile:ls` to build the language server for NodeJS
+
+To use the language server standalone, run
+
+- `node server/out/server.js`
+
 ## Structure
 
 ```
