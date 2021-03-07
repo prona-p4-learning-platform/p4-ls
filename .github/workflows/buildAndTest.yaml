@@ -19,4 +19,5 @@ jobs:
         env:
           CI: true
       - run: npm run compile:ls
-      - run: cd server && npm run test:tree-sitter
+      - run: cd server && npm run test:tree-sitter-corpus
+      - run: cd server && npm run test:tree-sitter-parse

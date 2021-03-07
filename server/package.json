@@ -17,7 +17,8 @@
     "vscode-languageserver-textdocument": "^1.0.1"
   },
   "scripts": {
-    "test:tree-sitter": "cd src/tree-sitter-p4/ && npx tree-sitter parse test/tutorials/exercises/**/*.p4 --stat --quiet"
+    "test:tree-sitter-corpus": "cd src/tree-sitter-p4/ && npx tree-sitter test ",
+    "test:tree-sitter-parse": "cd src/tree-sitter-p4/ && npx tree-sitter parse test/tutorials/exercises/**/*.p4 --stat --quiet"
   },
   "devDependencies": {
     "electron-rebuild": "^2.3.5",
