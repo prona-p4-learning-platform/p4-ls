@@ -348,6 +348,9 @@ module.exports = grammar({
         "bool",
         "error",
         "int",
+        seq("bit", "<", $.IDENTIFIER, ">"), // added to parse c-style #define BLOOM_FILTER_ENTRIES 4096
+        seq("int", "<", $.IDENTIFIER, ">"), // added to parse c-style #define BLOOM_FILTER_ENTRIES 4096
+        seq("varbit", "<", $.IDENTIFIER, ">"), // added to parse c-style #define BLOOM_FILTER_ENTRIES 4096
         seq("bit", "<", $.INTEGER, ">"),
         seq("int", "<", $.INTEGER, ">"),
         seq("varbit", "<", $.INTEGER, ">"),
