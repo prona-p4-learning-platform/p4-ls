@@ -189,7 +189,8 @@ module.exports = grammar({
       ),
     instantiation: ($) =>
       seq($.typeRef, "(", optional($.argumentList), ")", $.name, ";"),
-    variableDeclaration: ($) => seq($.typeRef, $.name, ";"),
+    variableDeclaration: ($) =>
+      seq($.typeRef, $.name, optional(seq("=", $.expression)), ";"),
     statement: ($) =>
       choice(
         $.assignmentOrMethodCallStatement,
@@ -379,6 +380,11 @@ module.exports = grammar({
           optional($.argumentList),
           ")"
         ),
+        seq("(", $.expression, ")"),
+        prec.right(seq("!", $.expression)),
+        prec.right(seq("~", $.expression)),
+        prec.right(seq("-", $.expression)),
+        prec.right(seq("+", $.expression)),
         prec.left(2, seq($.expression, ".", $.name)),
         prec.left(1, seq($.IDENTIFIER, ".", $.IDENTIFIER)),
         prec.left(2, seq($.expression, "(", optional($.argumentList), ")")),
@@ -416,7 +422,7 @@ module.exports = grammar({
         seq($.lvalue, "[", $.expression, ":", $.expression, "]")
       ),
     IDENTIFIER: ($) => /[a-zA-Z][a-zA-Z0-9_]*/,
-    INTEGER: ($) => /(0x)?[0-9]+/,
+    INTEGER: ($) => /(0x)?[0-9a-f]+/,
     TRUE: ($) => /true/,
     FALSE: ($) => /false/,
     STRING_LITERAL: ($) => /[^\\"\n]+/,

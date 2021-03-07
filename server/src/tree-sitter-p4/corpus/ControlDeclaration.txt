@@ -1,0 +1,237 @@
+================================================================================
+barebone control
+================================================================================
+
+control MyComputeChecksum(inout headers hdr, inout metadata meta) {
+	apply{}	
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (declaration
+    (controlDeclaration
+      (name
+        (IDENTIFIER))
+      (parameterList
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER)))
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER))))
+      (blockStatement))))
+
+================================================================================
+control with table
+================================================================================
+
+control MyIngress(inout headers hdr,
+                  inout metadata meta,
+                  inout standard_metadata_t standard_metadata) {
+
+    table ipv4_lpm {
+        key = {
+            hdr.ipv4.dstAddr: lpm;
+        }
+        actions = {
+            ipv4_forward;
+            drop;
+            NoAction;
+        }
+        size = 1024;
+        default_action = NoAction();
+    }
+    
+    apply {
+        /* TODO: fix ingress control logic
+         *  - ipv4_lpm should be applied only when IPv4 header is valid
+         */
+        ipv4_lpm.apply();
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (declaration
+    (controlDeclaration
+      (name
+        (IDENTIFIER))
+      (parameterList
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER)))
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER)))
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER))))
+      (controlLocalDeclaration
+        (tableDeclaration
+          (name
+            (IDENTIFIER))
+          (tableProperty
+            (keyElement
+              (expression
+                (expression
+                  (IDENTIFIER)
+                  (IDENTIFIER))
+                (name
+                  (IDENTIFIER)))
+              (name
+                (IDENTIFIER))))
+          (tableProperty
+            (actionListElement
+              (prefixedNonType
+                (IDENTIFIER)))
+            (actionListElement
+              (prefixedNonType
+                (IDENTIFIER)))
+            (actionListElement
+              (prefixedNonType
+                (IDENTIFIER))))
+          (tableProperty
+            (nonTableKwName
+              (IDENTIFIER))
+            (initializer
+              (expression
+                (INTEGER))))
+          (tableProperty
+            (nonTableKwName
+              (IDENTIFIER))
+            (initializer
+              (expression
+                (expression
+                  (IDENTIFIER)))))))
+      (blockStatement
+        (comment)
+        (statementOrDeclaration
+          (statement
+            (assignmentOrMethodCallStatement
+              (lvalue
+                (lvalue
+                  (prefixedNonType
+                    (IDENTIFIER)))
+                (name
+                  (IDENTIFIER))))))))))
+
+================================================================================
+control with actions
+================================================================================
+
+control MyIngress(inout headers hdr,
+                  inout metadata meta,
+                  inout standard_metadata_t standard_metadata) {
+    action drop() {
+        mark_to_drop(standard_metadata);
+    }
+    
+    action ipv4_forward(macAddr_t dstAddr, egressSpec_t port) {
+        /* TODO: fill out code in action body */
+    }    
+    apply {
+        /* TODO: fix ingress control logic
+         *  - ipv4_lpm should be applied only when IPv4 header is valid
+         */
+        ipv4_lpm.apply();
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (declaration
+    (controlDeclaration
+      (name
+        (IDENTIFIER))
+      (parameterList
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER)))
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER)))
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER))))
+      (controlLocalDeclaration
+        (actionDeclaration
+          (name
+            (IDENTIFIER))
+          (blockStatement
+            (statementOrDeclaration
+              (statement
+                (assignmentOrMethodCallStatement
+                  (lvalue
+                    (prefixedNonType
+                      (IDENTIFIER)))
+                  (argumentList
+                    (argument
+                      (expression
+                        (IDENTIFIER))))))))))
+      (controlLocalDeclaration
+        (actionDeclaration
+          (name
+            (IDENTIFIER))
+          (parameterList
+            (parameter
+              (typeRef
+                (typeName
+                  (prefixedType
+                    (IDENTIFIER))))
+              (name
+                (IDENTIFIER)))
+            (parameter
+              (typeRef
+                (typeName
+                  (prefixedType
+                    (IDENTIFIER))))
+              (name
+                (IDENTIFIER))))
+          (blockStatement
+            (comment))))
+      (blockStatement
+        (comment)
+        (statementOrDeclaration
+          (statement
+            (assignmentOrMethodCallStatement
+              (lvalue
+                (lvalue
+                  (prefixedNonType
+                    (IDENTIFIER)))
+                (name
+                  (IDENTIFIER))))))))))
