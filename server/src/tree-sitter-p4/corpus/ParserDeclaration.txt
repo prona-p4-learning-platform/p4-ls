@@ -1,0 +1,13 @@
+==================
+Parser without states
+==================
+
+parser MyParser(packet_in packet,
+                out headers hdr,
+                inout metadata meta,
+                inout standard_metadata_t standard_metadata) {
+}
+
+---
+
+(source_file (declaration (parserDeclaration (parserTypeDeclaration (name (IDENTIFIER)) (parameterList (parameter (typeRef (typeName (prefixedType (IDENTIFIER)))) (name (IDENTIFIER))) (parameter (typeRef (typeName (prefixedType (IDENTIFIER)))) (name (IDENTIFIER))) (parameter (typeRef (typeName (prefixedType (IDENTIFIER)))) (name (IDENTIFIER))) (parameter (typeRef (typeName (prefixedType (IDENTIFIER)))) (name (IDENTIFIER))))))))

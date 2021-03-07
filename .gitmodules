@@ -1,0 +1,3 @@
+[submodule "server/src/tree-sitter-p4/test/tutorials"]
+	path = server/src/tree-sitter-p4/test/tutorials
+	url = https://github.com/p4lang/tutorials

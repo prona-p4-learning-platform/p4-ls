@@ -16,3 +16,5 @@ jobs:
       - run: npx prettier --check .
         env:
           CI: true
+      - run: npm run compile:ls
+      - run: cd server && npm run test:tree-sitter
