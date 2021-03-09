@@ -2,6 +2,7 @@ import Parser, { SyntaxNode } from "tree-sitter";
 import { Diagnostic } from "vscode-languageserver";
 import ScopeNode, { DeclaredType } from "./node/ScopeNode";
 import parse from "./tree-sitter-p4/parse";
+import { logInfo } from "./utils/Logger";
 
 const BlockScopeNodeTypes = new Set<string>()
   .add("blockStatement")
@@ -106,7 +107,7 @@ const collectTypesInScopeNodes = (rootNode: Parser.SyntaxNode): ScopeNode => {
       const child0 = tree.namedChild(0);
       const child1 = tree.namedChild(1);
       if (child1) {
-        console.log(child1.text, currentBlockScope.type);
+        logInfo(child1.text + "(type: " + currentBlockScope.type + ")");
         currentBlockScope.addDeclaredType({
           type: "constant",
           identifier: child1.text,
@@ -189,7 +190,7 @@ export function parseSource(
 ): { scopeTreeRoot: ScopeNode; parseTreeRoot: Parser.SyntaxNode } {
   const parseTreeRoot = parse(source);
   const scopeTreeRoot = collectTypesInScopeNodes(parseTreeRoot.rootNode);
-  console.log(JSON.stringify(createAST(parseTreeRoot.rootNode)));
+  logInfo(JSON.stringify(createAST(parseTreeRoot.rootNode)));
   return {
     scopeTreeRoot,
     parseTreeRoot: parseTreeRoot.rootNode,

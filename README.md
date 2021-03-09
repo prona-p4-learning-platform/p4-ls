@@ -17,7 +17,7 @@ You can use the language server component of this repository without the vscode-
 
 To use the language server standalone, run
 
-- `node server/out/server.js`
+- `node server/out/server.js --stdio`
 
 ## Structure
 
