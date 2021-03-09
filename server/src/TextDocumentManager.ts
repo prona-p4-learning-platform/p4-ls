@@ -9,6 +9,7 @@ import { Range, TextDocument } from "vscode-languageserver-textdocument";
 import ScopeNode from "./node/ScopeNode";
 import { parseSource } from "./Parser";
 import Parser, { SyntaxNode } from "tree-sitter";
+import { logInfo } from "./utils/Logger"
 
 const nodeToDiagnostic = (node: SyntaxNode): Diagnostic => ({
   message: "test",
@@ -75,7 +76,7 @@ export default class TextDocumentManager {
       _textDocumentPosition.textDocument.uri
     );
     if (node) {
-      console.log("Found identifier to provide definition for: " + node.text);
+      logInfo("Found identifier to provide definition for: " + node.text);
       const rootScope = this.scopeRepresentation.get(
         _textDocumentPosition.textDocument.uri
       );
