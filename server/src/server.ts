@@ -32,7 +32,9 @@ class P4LanguageServer {
 
   // Create a simple text document manager.
   private documentManager = new TextdocumentManager();
-  private documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
+  private documents: TextDocuments<TextDocument> = new TextDocuments(
+    TextDocument
+  );
 
   // The global settings, used when the `workspace/configuration` request is not supported by the client.
   // Please note that this is not the case when using this server with the client provided in this example
@@ -42,7 +44,7 @@ class P4LanguageServer {
 
   // Cache the settings of all open documents
   private documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
- 
+
   private hasConfigurationCapability: boolean = false;
   private hasWorkspaceFolderCapability: boolean = false;
   private hasDiagnosticRelatedInformationCapability: boolean = false;
@@ -54,7 +56,7 @@ class P4LanguageServer {
 
     this.connection.onInitialize((params: InitializeParams) => {
       let capabilities = params.capabilities;
-    
+
       // Does the client support the `workspace/configuration` request?
       // If not, we fall back using global settings.
       this.hasConfigurationCapability = !!(
@@ -68,7 +70,7 @@ class P4LanguageServer {
         capabilities.textDocument.publishDiagnostics &&
         capabilities.textDocument.publishDiagnostics.relatedInformation
       );
-    
+
       const result: InitializeResult = {
         capabilities: {
           textDocumentSync: TextDocumentSyncKind.Incremental,
@@ -100,7 +102,9 @@ class P4LanguageServer {
       }
       if (this.hasWorkspaceFolderCapability) {
         this.connection.workspace.onDidChangeWorkspaceFolders((_event) => {
-          this.connection.console.log("Workspace folder change event received.");
+          this.connection.console.log(
+            "Workspace folder change event received."
+          );
         });
       }
     });
@@ -114,30 +118,29 @@ class P4LanguageServer {
           (change.settings.languageServerExample || this.defaultSettings)
         );
       }
-    
-    });    
+    });
 
- 
     // Only keep settings for open documents
     this.documents.onDidClose((e) => {
       this.documentSettings.delete(e.document.uri);
     });
-    
+
     // The content of a text document has changed. This event is emitted
     // when the text document first opened or when its content has changed.
     this.documents.onDidChangeContent((change) => {
       this.validateTextDocument(change.document);
     });
-    
-  
+
     this.connection.onDidChangeWatchedFiles((_change) => {
       // Monitored files have change in VSCode
       this.connection.console.log("We received an file change event");
     });
-    
-    this.connection.onDefinition(DefinitionProviderCreator(this.documentManager));
+
+    this.connection.onDefinition(
+      DefinitionProviderCreator(this.documentManager)
+    );
     this.connection.onHover(HoverProviderCreator(this.documentManager));
-    
+
     // This handler provides the initial list of the completion items.
     this.connection.onCompletion(
       (_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
@@ -158,7 +161,7 @@ class P4LanguageServer {
         ];
       }
     );
-    
+
     // This handler resolves additional information for the item selected in
     // the completion list.
     this.connection.onCompletionResolve(
@@ -173,14 +176,13 @@ class P4LanguageServer {
         return item;
       }
     );
-    
+
     // Make the text document manager listen on the connection
     // for open, change and close text document events
     this.documents.listen(this.connection);
-    
+
     // Listen on the connection
     this.connection.listen();
-
   }
 
   getDocumentSettings(resource: string): Thenable<ExampleSettings> {
@@ -206,7 +208,7 @@ class P4LanguageServer {
     } catch (ex) {
       this.connection.console.log(ex);
     }
-  
+
     // Send the computed diagnostics to VSCode.
     this.connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
   }

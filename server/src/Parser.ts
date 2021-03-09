@@ -2,7 +2,7 @@ import Parser, { SyntaxNode } from "tree-sitter";
 import { Diagnostic } from "vscode-languageserver";
 import ScopeNode, { DeclaredType } from "./node/ScopeNode";
 import parse from "./tree-sitter-p4/parse";
-import { logInfo } from "./utils/Logger"
+import { logInfo } from "./utils/Logger";
 
 const BlockScopeNodeTypes = new Set<string>()
   .add("blockStatement")
