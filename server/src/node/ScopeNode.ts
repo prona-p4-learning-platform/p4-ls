@@ -35,10 +35,20 @@ export default class ScopeNode {
     const { startPosition, endPosition } = this.syntaxSubtree;
     if (
       startPosition.row <= position.line &&
-      endPosition.row >= position.line &&
-      startPosition.column >= position.character &&
-      endPosition.column <= position.character
+      endPosition.row >= position.line
     ) {
+      if (
+        startPosition.row === position.line &&
+        startPosition.column > position.character
+      ) {
+        return false;
+      }
+      if (
+        endPosition.row === position.line &&
+        endPosition.column < position.character
+      ) {
+        return false;
+      }
       return true;
     }
     return false;
