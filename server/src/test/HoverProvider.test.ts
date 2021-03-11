@@ -26,7 +26,7 @@ it("shows the declaration source code excerpt if hovering over a type", () => {
     contents: {
       language: "P4",
       value:
-        "struct headers {\r\n    ethernet_t   ethernet;\r\n    ipv4_t       ipv4;\r\n}",
+        "struct headers {\n    ethernet_t   ethernet;\n    ipv4_t       ipv4;\n}",
     },
   });
 });
