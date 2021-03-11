@@ -3,6 +3,7 @@ import DefinitionProvider from "../DefinitionProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { readFileSync } from "fs";
 import assert from "assert";
+import path from "path";
 
 const docManager = new TextDocumentManager();
 const definitionProvider = DefinitionProvider(docManager);
@@ -10,7 +11,7 @@ const textDocument = TextDocument.create(
   "test",
   "p4",
   1,
-  readFileSync(__dirname + "\\code.p4", { encoding: "utf8" })
+  readFileSync(path.resolve(__dirname, "code.p4"), { encoding: "utf8" })
 );
 before(() => {
   docManager.update(textDocument);
