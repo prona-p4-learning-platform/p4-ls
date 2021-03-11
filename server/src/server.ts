@@ -17,7 +17,7 @@ import {
   TextDocumentSyncKind,
   InitializeResult,
 } from "vscode-languageserver/node";
-import TextdocumentManager from "./TextDocumentManager";
+import TextDocumentManager from "./TextDocumentManager";
 import DefinitionProviderCreator from "./DefinitionProvider";
 import HoverProviderCreator from "./HoverProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -31,7 +31,7 @@ class P4LanguageServer {
   public connection: Connection;
 
   // Create a simple text document manager.
-  private documentManager = new TextdocumentManager();
+  private documentManager = new TextDocumentManager();
   private documents: TextDocuments<TextDocument> = new TextDocuments(
     TextDocument
   );

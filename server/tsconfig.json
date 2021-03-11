@@ -2,9 +2,9 @@
   "compilerOptions": {
     "target": "es2019",
     "lib": ["ES2019"],
-    "module": "commonjs",
-    "moduleResolution": "node",
     "esModuleInterop": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
     "sourceMap": true,
     "strict": true,
     "outDir": "out",
