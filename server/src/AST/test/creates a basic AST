@@ -1,0 +1,232 @@
+{
+  "kind": "File",
+  "children": [
+    {
+      "kind": "ControlDeclaration",
+      "children": [
+        {
+          "kind": "ActionDeclarationNode",
+          "children": [
+            {
+              "children": [],
+              "kind": "MethodCallStatement",
+              "callee": {
+                "children": [],
+                "kind": "Identifier",
+                "identifier": "mark_to_drop"
+              },
+              "parameters": [
+                {
+                  "children": [],
+                  "kind": "Identifier",
+                  "identifier": "standard_metadata"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "ActionDeclarationNode",
+          "children": [
+            {
+              "children": [],
+              "kind": "AssignmentStatement",
+              "lhs": {
+                "children": [],
+                "kind": "PropertyAccessExpression",
+                "lhs": {
+                  "children": [],
+                  "kind": "Identifier",
+                  "identifier": "standard_metadata"
+                },
+                "rhs": {
+                  "children": [],
+                  "kind": "Identifier",
+                  "identifier": "egress_spec"
+                }
+              },
+              "rhs": {
+                "children": [],
+                "kind": "Identifier",
+                "identifier": "port"
+              }
+            },
+            {
+              "children": [],
+              "kind": "AssignmentStatement",
+              "lhs": {
+                "children": [],
+                "kind": "PropertyAccessExpression",
+                "lhs": {
+                  "children": [],
+                  "kind": "PropertyAccessExpression",
+                  "lhs": {
+                    "children": [],
+                    "kind": "Identifier",
+                    "identifier": "hdr"
+                  },
+                  "rhs": {
+                    "children": [],
+                    "kind": "Identifier",
+                    "identifier": "ethernet"
+                  }
+                },
+                "rhs": {
+                  "children": [],
+                  "kind": "Identifier",
+                  "identifier": "srcAddr"
+                }
+              },
+              "rhs": {
+                "children": [],
+                "kind": "PropertyAccessExpression",
+                "lhs": {
+                  "children": [],
+                  "kind": "PropertyAccessExpression",
+                  "lhs": {
+                    "children": [],
+                    "kind": "Identifier",
+                    "identifier": "hdr"
+                  },
+                  "rhs": {
+                    "children": [],
+                    "kind": "Identifier",
+                    "identifier": "ethernet"
+                  }
+                },
+                "rhs": {
+                  "children": [],
+                  "kind": "Identifier",
+                  "identifier": "dstAddr"
+                }
+              }
+            },
+            {
+              "children": [],
+              "kind": "AssignmentStatement",
+              "lhs": {
+                "children": [],
+                "kind": "PropertyAccessExpression",
+                "lhs": {
+                  "children": [],
+                  "kind": "PropertyAccessExpression",
+                  "lhs": {
+                    "children": [],
+                    "kind": "Identifier",
+                    "identifier": "hdr"
+                  },
+                  "rhs": {
+                    "children": [],
+                    "kind": "Identifier",
+                    "identifier": "ethernet"
+                  }
+                },
+                "rhs": {
+                  "children": [],
+                  "kind": "Identifier",
+                  "identifier": "dstAddr"
+                }
+              },
+              "rhs": {
+                "children": [],
+                "kind": "Identifier",
+                "identifier": "dstAddr"
+              }
+            },
+            {
+              "children": [],
+              "kind": "AssignmentStatement",
+              "lhs": {
+                "children": [],
+                "kind": "PropertyAccessExpression",
+                "lhs": {
+                  "children": [],
+                  "kind": "PropertyAccessExpression",
+                  "lhs": {
+                    "children": [],
+                    "kind": "Identifier",
+                    "identifier": "hdr"
+                  },
+                  "rhs": {
+                    "children": [],
+                    "kind": "Identifier",
+                    "identifier": "ipv4"
+                  }
+                },
+                "rhs": {
+                  "children": [],
+                  "kind": "Identifier",
+                  "identifier": "ttl"
+                }
+              },
+              "rhs": {
+                "children": [],
+                "kind": "SubstrationExpression",
+                "lhs": {
+                  "children": [],
+                  "kind": "PropertyAccessExpression",
+                  "lhs": {
+                    "children": [],
+                    "kind": "PropertyAccessExpression",
+                    "lhs": {
+                      "children": [],
+                      "kind": "Identifier",
+                      "identifier": "hdr"
+                    },
+                    "rhs": {
+                      "children": [],
+                      "kind": "Identifier",
+                      "identifier": "ipv4"
+                    }
+                  },
+                  "rhs": {
+                    "children": [],
+                    "kind": "Identifier",
+                    "identifier": "ttl"
+                  }
+                },
+                "rhs": {
+                  "children": [],
+                  "kind": "Integer",
+                  "value": "1"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "children": [],
+          "kind": "ParameterNode",
+          "type": {
+            "children": [],
+            "kind": "Identifier",
+            "identifier": "headers"
+          },
+          "identifier": "hdr"
+        },
+        {
+          "children": [],
+          "kind": "ParameterNode",
+          "type": {
+            "children": [],
+            "kind": "Identifier",
+            "identifier": "metadata"
+          },
+          "identifier": "meta"
+        },
+        {
+          "children": [],
+          "kind": "ParameterNode",
+          "type": {
+            "children": [],
+            "kind": "Identifier",
+            "identifier": "standard_metadata_t"
+          },
+          "identifier": "standard_metadata"
+        }
+      ]
+    }
+  ]
+}

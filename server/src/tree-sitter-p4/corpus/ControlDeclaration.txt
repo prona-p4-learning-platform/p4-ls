@@ -235,3 +235,141 @@ control MyIngress(inout headers hdr,
                     (IDENTIFIER)))
                 (name
                   (IDENTIFIER))))))))))
+
+================================================================================
+control with actions 2
+================================================================================
+
+control MyIngress(inout headers hdr,
+    inout metadata meta,
+    inout standard_metadata_t standard_metadata) {
+        
+    action ipv4_forward(macAddr_t dstAddr, egressSpec_t port) {
+        standard_metadata.egress_spec = port;
+        hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
+        hdr.ethernet.dstAddr = dstAddr;
+        hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+    }
+
+    apply {
+    }    
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (declaration
+    (controlDeclaration
+      (name
+        (IDENTIFIER))
+      (parameterList
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER)))
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER)))
+        (parameter
+          (typeRef
+            (typeName
+              (prefixedType
+                (IDENTIFIER))))
+          (name
+            (IDENTIFIER))))
+      (controlLocalDeclaration
+        (actionDeclaration
+          (name
+            (IDENTIFIER))
+          (parameterList
+            (parameter
+              (typeRef
+                (typeName
+                  (prefixedType
+                    (IDENTIFIER))))
+              (name
+                (IDENTIFIER)))
+            (parameter
+              (typeRef
+                (typeName
+                  (prefixedType
+                    (IDENTIFIER))))
+              (name
+                (IDENTIFIER))))
+          (blockStatement
+            (statementOrDeclaration
+              (statement
+                (assignmentOrMethodCallStatement
+                  (assignmentStatement
+                    (lvalue
+                      (lvalue
+                        (prefixedNonType
+                          (IDENTIFIER)))
+                      (name
+                        (IDENTIFIER)))
+                    (expression
+                      (IDENTIFIER))))))
+            (statementOrDeclaration
+              (statement
+                (assignmentOrMethodCallStatement
+                  (assignmentStatement
+                    (lvalue
+                      (lvalue
+                        (lvalue
+                          (prefixedNonType
+                            (IDENTIFIER)))
+                        (name
+                          (IDENTIFIER)))
+                      (name
+                        (IDENTIFIER)))
+                    (expression
+                      (expression
+                        (IDENTIFIER)
+                        (IDENTIFIER))
+                      (name
+                        (IDENTIFIER)))))))
+            (statementOrDeclaration
+              (statement
+                (assignmentOrMethodCallStatement
+                  (assignmentStatement
+                    (lvalue
+                      (lvalue
+                        (lvalue
+                          (prefixedNonType
+                            (IDENTIFIER)))
+                        (name
+                          (IDENTIFIER)))
+                      (name
+                        (IDENTIFIER)))
+                    (expression
+                      (IDENTIFIER))))))
+            (statementOrDeclaration
+              (statement
+                (assignmentOrMethodCallStatement
+                  (assignmentStatement
+                    (lvalue
+                      (lvalue
+                        (lvalue
+                          (prefixedNonType
+                            (IDENTIFIER)))
+                        (name
+                          (IDENTIFIER)))
+                      (name
+                        (IDENTIFIER)))
+                    (expression
+                      (expression
+                        (expression
+                          (IDENTIFIER)
+                          (IDENTIFIER))
+                        (name
+                          (IDENTIFIER)))
+                      (expression
+                        (INTEGER))))))))))
+      (blockStatement))))

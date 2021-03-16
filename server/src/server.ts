@@ -21,6 +21,7 @@ import TextDocumentManager from "./TextDocumentManager";
 import DefinitionProviderCreator from "./DefinitionProvider";
 import HoverProviderCreator from "./HoverProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
+import CompletionProvider from "./CompletionProvider";
 
 // The example settings
 interface ExampleSettings {
@@ -77,6 +78,7 @@ class P4LanguageServer {
           // Tell the client that this server supports code completion.
           completionProvider: {
             resolveProvider: true,
+            triggerCharacters: ["."],
           },
           definitionProvider: true,
           hoverProvider: true,
@@ -142,25 +144,7 @@ class P4LanguageServer {
     this.connection.onHover(HoverProviderCreator(this.documentManager));
 
     // This handler provides the initial list of the completion items.
-    this.connection.onCompletion(
-      (_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-        // The pass parameter contains the position of the text document in
-        // which code complete got requested. For the example we ignore this
-        // info and always provide the same completion items.
-        return [
-          {
-            label: "TypeScript",
-            kind: CompletionItemKind.Text,
-            data: 1,
-          },
-          {
-            label: "JavaScript",
-            kind: CompletionItemKind.Text,
-            data: 2,
-          },
-        ];
-      }
-    );
+    this.connection.onCompletion(CompletionProvider(this.documentManager));
 
     // This handler resolves additional information for the item selected in
     // the completion list.

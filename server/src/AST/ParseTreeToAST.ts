@@ -1,0 +1,177 @@
+import { S_IFREG } from "constants";
+import Parser from "tree-sitter";
+import ActionDeclarationNode from "./node/ActionDeclarationNode";
+import AssignmentStatement from "./node/AssignmentStatement";
+import ASTNode from "./node/ASTNode";
+import BaseTypeNode from "./node/BaseTypeNode";
+import ConstantDeclarationNode from "./node/ConstantDeclarationNode";
+import ControlDeclarationNode from "./node/ControlDeclarationNode";
+import ExpressionNode, {
+  AdditionExpression,
+  DivisionExpression,
+  MultiplicationExpression,
+  PropertyAccessExpression,
+  SubstrationExpression,
+} from "./node/ExpressionNode";
+import FileNode from "./node/FileNode";
+import HeaderTypeDeclarationNode from "./node/HeaderTypeDeclarationNode";
+import IdentifierNode from "./node/IdentifierNode";
+import IntegerNode from "./node/IntegerNode";
+import MethodCallStatement from "./node/MethodCallStatement";
+import ParameterNode from "./node/ParameterNode";
+import ScopeNode from "./node/ScopeNode";
+import StructTypeDeclarationNode from "./node/StructTypeDeclarationNode";
+
+export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
+  let currentScopeNode: ScopeNode;
+
+  function recurse(tree: Parser.SyntaxNode): ASTNode {
+    if (tree.type === "constantDeclaration") {
+      const child0 = recurse(tree.namedChild(0)!);
+      const child1 = tree.namedChild(1);
+      const child2 = recurse(tree.namedChild(2)!);
+      const returnVal: ConstantDeclarationNode = new ConstantDeclarationNode(
+        child0,
+        child1!.text,
+        child2
+      );
+      returnVal.children = [child0, child2];
+      currentScopeNode.addDeclaredVariable(returnVal);
+      return returnVal;
+    } else if (tree.type === "source_file") {
+      currentScopeNode = new FileNode(tree);
+      (currentScopeNode as FileNode).setStatements(
+        tree.namedChildren.map((child) => recurse(child))
+      );
+      return currentScopeNode;
+    } else if (tree.type === "baseType") {
+      const node = new BaseTypeNode(
+        tree.child(0)!.text,
+        tree.namedChildCount > 0 ? recurse(tree.namedChild(0)!) : null
+      );
+      return node;
+    } else if (tree.type === "name") {
+      return new IdentifierNode(tree.text);
+    } else if (tree.type === "headerTypeDeclaration") {
+      const structProps: { [key: string]: ASTNode } = {};
+      tree
+        .descendantsOfType("structField")
+        .forEach(
+          (child) =>
+            (structProps[child.child(1)!.text] = recurse(child.firstChild!))
+        );
+      const node = new HeaderTypeDeclarationNode(
+        tree.namedChild(0)!.text,
+        structProps
+      );
+      currentScopeNode.addDeclaredType(node);
+      return node;
+    } else if (tree.type === "structTypeDeclaration") {
+      const structProps: { [key: string]: ASTNode } = {};
+      tree
+        .descendantsOfType("structField")
+        .forEach(
+          (child) =>
+            (structProps[child.child(1)!.text] = recurse(child.firstChild!))
+        );
+      const node = new StructTypeDeclarationNode(
+        tree.namedChild(0)!.text,
+        structProps
+      );
+      currentScopeNode.addDeclaredType(node);
+      return node;
+    } else if (tree.type === "typeName") {
+      return new IdentifierNode(tree.text);
+    } else if (tree.type === "methodCallStatement") {
+      const node = new MethodCallStatement(
+        recurse(tree.namedChild(0)!),
+        tree.descendantsOfType("argument").map((child) => recurse(child))
+      );
+      return node;
+    } else if (tree.type === "INTEGER") {
+      return new IntegerNode(tree.text);
+    } else if (tree.type === "parameter") {
+      return new ParameterNode(
+        recurse(tree.namedChild(0)!),
+        tree.namedChild(1)!.text
+      );
+    } else if (tree.type === "controlDeclaration") {
+      const parameters = tree
+        .namedChild(1)
+        ?.descendantsOfType("parameter")
+        .map((child) => recurse(child));
+      console.log("params: ", parameters);
+      const node = new ControlDeclarationNode(
+        tree.namedChild(0)!.text,
+        parameters as ParameterNode[],
+        currentScopeNode,
+        tree
+      );
+      currentScopeNode = node;
+      node.setStatements(
+        tree
+          .descendantsOfType("controlLocalDeclaration")
+          .map((child) => recurse(child))
+      );
+      currentScopeNode = node.getParentScopeNode()!;
+      return node;
+    } else if (tree.type === "lvalue") {
+      const node = tree;
+      if (node.childCount === 3) {
+        if (node.child(1)!.text === ".") {
+          const child1 = recurse(tree.namedChild(0)!);
+          const child2 = recurse(tree.namedChild(1)!);
+          return new PropertyAccessExpression(child1, child2);
+        }
+        return tree.namedChildren.map((child) => recurse(child))[0];
+      } else {
+        return tree.namedChildren.map((child) => recurse(child))[0];
+      }
+    } else if (tree.type === "expression") {
+      if (tree.childCount === 3) {
+        const child1 = recurse(tree.namedChild(0)!);
+        const child2 = recurse(tree.namedChild(1)!);
+        switch (tree.child(1)!.text) {
+          case "-":
+            return new SubstrationExpression(child1, child2);
+          case "+":
+            return new AdditionExpression(child1, child2);
+          case ".":
+            return new PropertyAccessExpression(child1, child2);
+          case "*":
+            return new MultiplicationExpression(child1, child2);
+          case "/":
+            return new DivisionExpression(child1, child2);
+        }
+        return new ExpressionNode(child1, child2);
+      }
+      return tree.namedChildren.map((child) => recurse(child))[0];
+    } else if (tree.type === "IDENTIFIER") {
+      return new IdentifierNode(tree.text);
+    } else if (tree.type === "assignmentStatement") {
+      return new AssignmentStatement(
+        recurse(tree.namedChild(0)!),
+        recurse(tree.namedChild(1)!)
+      );
+    } else if (tree.type === "actionDeclaration") {
+      const node = (currentScopeNode = new ActionDeclarationNode(
+        tree.namedChild(1)!.text,
+        tree
+          .namedChild(1)!
+          .descendantsOfType("parameter")
+          .map((child) => recurse(child)) as ParameterNode[],
+        currentScopeNode,
+        tree
+      ));
+      currentScopeNode.children =
+        tree.lastChild?.namedChildren.map((child) => recurse(child)) || [];
+      currentScopeNode = currentScopeNode.getParentScopeNode()!;
+      return node;
+    } else {
+      console.log(tree.type);
+      return tree.namedChildren.map((child) => recurse(child))[0];
+    }
+  }
+  const tree = recurse(rootNode);
+  return tree;
+};

@@ -1,4 +1,5 @@
 import {
+  CompletionItem,
   Definition,
   Diagnostic,
   Hover,
@@ -6,7 +7,7 @@ import {
   TextDocumentPositionParams,
 } from "vscode-languageserver";
 import { Range, TextDocument } from "vscode-languageserver-textdocument";
-import ScopeNode from "./node/ScopeNode";
+import ScopeNode from "./AST/node/ScopeNode";
 import { parseSource } from "./Parser";
 import Parser, { SyntaxNode } from "tree-sitter";
 
@@ -126,5 +127,18 @@ export default class TextDocumentManager {
       }
     }
     return { contents: "" };
+  }
+
+  provideCompletion(
+    _textDocumentPosition: TextDocumentPositionParams
+  ): CompletionItem[] {
+    const node = this.getNodeAtPosition(
+      _textDocumentPosition.position,
+      _textDocumentPosition.textDocument.uri
+    );
+    if (node) {
+      const sibling = node.previousNamedSibling;
+    }
+    return [];
   }
 }
