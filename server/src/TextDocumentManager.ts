@@ -10,6 +10,8 @@ import { Range, TextDocument } from "vscode-languageserver-textdocument";
 import ScopeNode from "./AST/node/ScopeNode";
 import { parseSource } from "./Parser";
 import Parser, { SyntaxNode } from "tree-sitter";
+import TypeDeclarationNode from "./AST/node/TypeDeclarationNode";
+import VariableDeclarationNode from "./AST/node/VariableDeclarationNode";
 
 const nodeToDiagnostic = (node: SyntaxNode): Diagnostic => ({
   message: "test",
@@ -79,7 +81,7 @@ export default class TextDocumentManager {
       const rootScope = this.scopeRepresentation.get(
         _textDocumentPosition.textDocument.uri
       );
-      const definitionNode = rootScope!.findClosestDefinitionForIdentifier(
+      const definitionNode = rootScope!.getVariableOrTypeForIdentifierAtPos(
         node.text,
         _textDocumentPosition.position
       );
@@ -87,14 +89,8 @@ export default class TextDocumentManager {
         return {
           uri: doc!.uri,
           range: {
-            start: {
-              line: definitionNode.startPosition.row,
-              character: definitionNode.endPosition.column,
-            },
-            end: {
-              line: definitionNode.endPosition.row,
-              character: definitionNode.endPosition.column,
-            },
+            start: definitionNode.startPosition,
+            end: definitionNode.endPosition,
           },
         };
       }
@@ -118,12 +114,20 @@ export default class TextDocumentManager {
       const rootScope = this.scopeRepresentation.get(
         _textDocumentPosition.textDocument.uri
       );
-      const definitionNode = rootScope!.findClosestDefinitionForIdentifier(
+      const definitionNode = rootScope!.getVariableOrTypeForIdentifierAtPos(
         node.text,
         _textDocumentPosition.position
       );
       if (definitionNode) {
-        return { contents: { language: "P4", value: definitionNode.text } };
+        if (definitionNode instanceof TypeDeclarationNode) {
+          return {
+            contents: { language: "P4", value: definitionNode.identifier },
+          };
+        } else if (definitionNode instanceof VariableDeclarationNode) {
+          return {
+            contents: { language: "P4", value: definitionNode.text() },
+          };
+        }
       }
     }
     return { contents: "" };

@@ -5,7 +5,7 @@ import ScopeNode from "./ScopeNode";
 export default class FileNode extends ScopeNode {
   public statements: ASTNode[] = [];
   constructor(subtree: SyntaxNode) {
-    super("File", null, subtree);
+    super(subtree, "File", null);
   }
 
   public setStatements(statements: ASTNode[]) {

@@ -3,6 +3,7 @@ import { Position } from "vscode-languageserver";
 import ConstantDeclarationNode from "./ConstantDeclarationNode";
 import ASTNode from "./ASTNode";
 import TypeDeclarationNode from "./TypeDeclarationNode";
+import VariableDeclarationNode from "./VariableDeclarationNode";
 
 export type DeclaredVariable = ConstantDeclarationNode;
 
@@ -11,11 +12,11 @@ export default abstract class ScopeNode extends ASTNode {
   private declaredVariables = new Map<string, DeclaredVariable>();
   private childScopeNodes: ScopeNode[] = [];
   constructor(
+    private syntaxSubtree: SyntaxNode,
     public kind: string,
-    private parentScopeNode: ScopeNode | null,
-    private syntaxSubtree: SyntaxNode
+    private parentScopeNode: ScopeNode | null
   ) {
-    super();
+    super(syntaxSubtree);
   }
 
   addDeclaredType(type: TypeDeclarationNode) {
@@ -28,6 +29,31 @@ export default abstract class ScopeNode extends ASTNode {
 
   getDeclaredType(identifier: string) {
     return this.declaredTypes.get(identifier);
+  }
+
+  getDeclaredVariable(identifier: string) {
+    return this.declaredVariables.get(identifier);
+  }
+
+  getVariableOrTypeForIdentifierAtPos(
+    identifier: string,
+    pos: Position
+  ): TypeDeclarationNode | VariableDeclarationNode | null {
+    if (this.containsPosition(pos)) {
+      const c = this.childScopeNodes.filter((node) =>
+        node.containsPosition(pos)
+      );
+      if (c.length > 0) {
+        return c[0].getVariableOrTypeForIdentifierAtPos(identifier, pos);
+      }
+    }
+    if (this.declaredVariables.has(identifier)) {
+      return this.getDeclaredVariable(identifier)!;
+    }
+    if (this.declaredTypes.has(identifier)) {
+      return this.getDeclaredType(identifier)!;
+    }
+    return null;
   }
 
   containsPosition(position: Position): boolean {

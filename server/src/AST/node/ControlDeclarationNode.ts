@@ -11,7 +11,7 @@ export default class ControlDeclarationNode extends ScopeNode {
     parentScopeNode: ScopeNode,
     subtree: SyntaxNode
   ) {
-    super("ControlDeclaration", parentScopeNode, subtree);
+    super(subtree, "ControlDeclaration", parentScopeNode);
   }
 
   public setStatements(statements: ASTNode[]) {

@@ -30,6 +30,7 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
       const child1 = tree.namedChild(1);
       const child2 = recurse(tree.namedChild(2)!);
       const returnVal: ConstantDeclarationNode = new ConstantDeclarationNode(
+        tree,
         child0,
         child1!.text,
         child2
@@ -45,12 +46,13 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
       return currentScopeNode;
     } else if (tree.type === "baseType") {
       const node = new BaseTypeNode(
+        tree,
         tree.child(0)!.text,
         tree.namedChildCount > 0 ? recurse(tree.namedChild(0)!) : null
       );
       return node;
     } else if (tree.type === "name") {
-      return new IdentifierNode(tree.text);
+      return new IdentifierNode(tree, tree.text);
     } else if (tree.type === "headerTypeDeclaration") {
       const structProps: { [key: string]: ASTNode } = {};
       tree
@@ -60,6 +62,7 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
             (structProps[child.child(1)!.text] = recurse(child.firstChild!))
         );
       const node = new HeaderTypeDeclarationNode(
+        tree,
         tree.namedChild(0)!.text,
         structProps
       );
@@ -74,23 +77,26 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
             (structProps[child.child(1)!.text] = recurse(child.firstChild!))
         );
       const node = new StructTypeDeclarationNode(
+        tree,
         tree.namedChild(0)!.text,
         structProps
       );
       currentScopeNode.addDeclaredType(node);
       return node;
     } else if (tree.type === "typeName") {
-      return new IdentifierNode(tree.text);
+      return new IdentifierNode(tree, tree.text);
     } else if (tree.type === "methodCallStatement") {
       const node = new MethodCallStatement(
+        tree,
         recurse(tree.namedChild(0)!),
         tree.descendantsOfType("argument").map((child) => recurse(child))
       );
       return node;
     } else if (tree.type === "INTEGER") {
-      return new IntegerNode(tree.text);
+      return new IntegerNode(tree, tree.text);
     } else if (tree.type === "parameter") {
       return new ParameterNode(
+        tree,
         recurse(tree.namedChild(0)!),
         tree.namedChild(1)!.text
       );
@@ -120,7 +126,7 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
         if (node.child(1)!.text === ".") {
           const child1 = recurse(tree.namedChild(0)!);
           const child2 = recurse(tree.namedChild(1)!);
-          return new PropertyAccessExpression(child1, child2);
+          return new PropertyAccessExpression(tree, child1, child2);
         }
         return tree.namedChildren.map((child) => recurse(child))[0];
       } else {
@@ -132,23 +138,24 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
         const child2 = recurse(tree.namedChild(1)!);
         switch (tree.child(1)!.text) {
           case "-":
-            return new SubstrationExpression(child1, child2);
+            return new SubstrationExpression(tree, child1, child2);
           case "+":
-            return new AdditionExpression(child1, child2);
+            return new AdditionExpression(tree, child1, child2);
           case ".":
-            return new PropertyAccessExpression(child1, child2);
+            return new PropertyAccessExpression(tree, child1, child2);
           case "*":
-            return new MultiplicationExpression(child1, child2);
+            return new MultiplicationExpression(tree, child1, child2);
           case "/":
-            return new DivisionExpression(child1, child2);
+            return new DivisionExpression(tree, child1, child2);
         }
-        return new ExpressionNode(child1, child2);
+        return new ExpressionNode(tree, child1, child2);
       }
       return tree.namedChildren.map((child) => recurse(child))[0];
     } else if (tree.type === "IDENTIFIER") {
-      return new IdentifierNode(tree.text);
+      return new IdentifierNode(tree, tree.text);
     } else if (tree.type === "assignmentStatement") {
       return new AssignmentStatement(
+        tree,
         recurse(tree.namedChild(0)!),
         recurse(tree.namedChild(1)!)
       );

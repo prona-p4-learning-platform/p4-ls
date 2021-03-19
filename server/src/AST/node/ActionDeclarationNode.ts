@@ -11,7 +11,7 @@ export default class ActionDeclarationNode extends ScopeNode {
     parentScopeNode: ScopeNode,
     subtree: SyntaxNode
   ) {
-    super("ActionDeclarationNode", parentScopeNode, subtree);
+    super(subtree, "ActionDeclarationNode", parentScopeNode);
   }
 
   public setStatements(statements: ASTNode[]) {
