@@ -10,4 +10,4 @@ if [ "$ELECTRON_VERSION" ]; then
 fi
 
 cp -r build ../../out/tree-sitter-p4/
-cp ./index.js ../../out/tree-sitter-p4/
+cp -r bindings ../../out/tree-sitter-p4/
