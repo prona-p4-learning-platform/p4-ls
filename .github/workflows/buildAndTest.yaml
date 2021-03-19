@@ -15,6 +15,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
+      - run: npm i -g tree-sitter-cli
       - run: npm run lint
         env:
           CI: true
