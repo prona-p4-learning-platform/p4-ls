@@ -10,6 +10,6 @@ export default class ConstantDeclaration extends VariableDeclarationNode {
     public readonly identifier: string,
     public readonly value: ASTNode
   ) {
-    super(syntaxNode);
+    super(syntaxNode, identifier);
   }
 }

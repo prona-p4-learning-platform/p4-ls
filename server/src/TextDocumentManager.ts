@@ -45,19 +45,6 @@ export default class TextDocumentManager {
     return a;
   }
 
-  private rangeFromNode(node: Parser.SyntaxNode): Range {
-    return {
-      start: {
-        line: node.startPosition.row,
-        character: node.startPosition.column,
-      },
-      end: {
-        line: node.startPosition.row,
-        character: node.startPosition.column,
-      },
-    };
-  }
-
   private getNodeAtPosition(
     position: Position,
     uri: string
@@ -69,10 +56,9 @@ export default class TextDocumentManager {
     });
   }
 
-  provideDefinition(
+  private getNodeForIdentifierAtPosition(
     _textDocumentPosition: TextDocumentPositionParams
-  ): Definition {
-    const doc = this.documents.get(_textDocumentPosition.textDocument.uri);
+  ) {
     const node = this.getNodeAtPosition(
       _textDocumentPosition.position,
       _textDocumentPosition.textDocument.uri
@@ -86,19 +72,32 @@ export default class TextDocumentManager {
         _textDocumentPosition.position
       );
       if (definitionNode) {
-        return {
-          uri: doc!.uri,
-          range: {
-            start: definitionNode.startPosition,
-            end: definitionNode.endPosition,
-          },
-        };
+        return definitionNode;
       }
+    }
+  }
+
+  provideDefinition(
+    _textDocumentPosition: TextDocumentPositionParams
+  ): Definition {
+    const doc = this.documents.get(_textDocumentPosition.textDocument.uri);
+    const definitionNode = this.getNodeForIdentifierAtPosition(
+      _textDocumentPosition
+    );
+    if (definitionNode) {
+      return {
+        uri: doc!.uri,
+        range: {
+          start: definitionNode.startPosition,
+          end: definitionNode.endPosition,
+        },
+      };
     }
     const range = {
       start: doc!.positionAt(0),
       end: doc!.positionAt(0),
     };
+
     return {
       uri: doc!.uri,
       range,
@@ -106,28 +105,18 @@ export default class TextDocumentManager {
   }
 
   provideHover(_textDocumentPosition: TextDocumentPositionParams): Hover {
-    const node = this.getNodeAtPosition(
-      _textDocumentPosition.position,
-      _textDocumentPosition.textDocument.uri
+    const definitionNode = this.getNodeForIdentifierAtPosition(
+      _textDocumentPosition
     );
-    if (node) {
-      const rootScope = this.scopeRepresentation.get(
-        _textDocumentPosition.textDocument.uri
-      );
-      const definitionNode = rootScope!.getVariableOrTypeForIdentifierAtPos(
-        node.text,
-        _textDocumentPosition.position
-      );
-      if (definitionNode) {
-        if (definitionNode instanceof TypeDeclarationNode) {
-          return {
-            contents: { language: "P4", value: definitionNode.identifier },
-          };
-        } else if (definitionNode instanceof VariableDeclarationNode) {
-          return {
-            contents: { language: "P4", value: definitionNode.text() },
-          };
-        }
+    if (definitionNode) {
+      if (definitionNode instanceof TypeDeclarationNode) {
+        return {
+          contents: { language: "P4", value: definitionNode.text() },
+        };
+      } else if (definitionNode instanceof VariableDeclarationNode) {
+        return {
+          contents: { language: "P4", value: definitionNode.text() },
+        };
       }
     }
     return { contents: "" };

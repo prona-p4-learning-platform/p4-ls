@@ -12,6 +12,7 @@ export default class ControlDeclarationNode extends ScopeNode {
     subtree: SyntaxNode
   ) {
     super(subtree, "ControlDeclaration", parentScopeNode);
+    parameters.forEach((param) => this.addDeclaredVariable(param));
   }
 
   public setStatements(statements: ASTNode[]) {

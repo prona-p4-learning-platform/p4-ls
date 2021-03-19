@@ -1,15 +1,12 @@
 import { SyntaxNode } from "tree-sitter";
 import { Position } from "vscode-languageserver";
-import ConstantDeclarationNode from "./ConstantDeclarationNode";
 import ASTNode from "./ASTNode";
 import TypeDeclarationNode from "./TypeDeclarationNode";
 import VariableDeclarationNode from "./VariableDeclarationNode";
 
-export type DeclaredVariable = ConstantDeclarationNode;
-
 export default abstract class ScopeNode extends ASTNode {
   private declaredTypes = new Map<string, TypeDeclarationNode>();
-  private declaredVariables = new Map<string, DeclaredVariable>();
+  private declaredVariables = new Map<string, VariableDeclarationNode>();
   private childScopeNodes: ScopeNode[] = [];
   constructor(
     private syntaxSubtree: SyntaxNode,
@@ -17,13 +14,16 @@ export default abstract class ScopeNode extends ASTNode {
     private parentScopeNode: ScopeNode | null
   ) {
     super(syntaxSubtree);
+    if (parentScopeNode) {
+      parentScopeNode.childScopeNodes.push(this);
+    }
   }
 
   addDeclaredType(type: TypeDeclarationNode) {
     this.declaredTypes.set(type.identifier, type);
   }
 
-  addDeclaredVariable(variable: DeclaredVariable) {
+  addDeclaredVariable(variable: VariableDeclarationNode) {
     this.declaredVariables.set(variable.identifier, variable);
   }
 
@@ -44,7 +44,8 @@ export default abstract class ScopeNode extends ASTNode {
         node.containsPosition(pos)
       );
       if (c.length > 0) {
-        return c[0].getVariableOrTypeForIdentifierAtPos(identifier, pos);
+        const a = c[0].getVariableOrTypeForIdentifierAtPos(identifier, pos);
+        if (a !== null) return a;
       }
     }
     if (this.declaredVariables.has(identifier)) {
