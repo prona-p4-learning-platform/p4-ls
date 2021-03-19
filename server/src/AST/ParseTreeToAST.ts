@@ -1,4 +1,3 @@
-import { S_IFREG } from "constants";
 import Parser from "tree-sitter";
 import ActionDeclarationNode from "./node/ActionDeclarationNode";
 import AssignmentStatement from "./node/AssignmentStatement";

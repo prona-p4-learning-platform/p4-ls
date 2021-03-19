@@ -1,5 +1,9 @@
 export interface Parser {
-  parse(input: string | Input, previousTree?: Tree, options?: {bufferSize?: number, includedRanges?: Range[]}): Tree;
+  parse(
+    input: string | Input,
+    previousTree?: Tree,
+    options?: { bufferSize?: number; includedRanges?: Range[] }
+  ): Tree;
   getLanguage(): any;
   setLanguage(language: any): void;
   getLogger(): Logger;
@@ -12,10 +16,10 @@ export type Point = {
 };
 
 export type Range = {
-  startIndex: number,
-  endIndex: number,
-  startPosition: Point,
-  endPosition: Point
+  startIndex: number;
+  endIndex: number;
+  startPosition: Point;
+  endPosition: Point;
 };
 
 export type Edit = {
@@ -29,7 +33,7 @@ export type Edit = {
 
 export type Logger = (
   message: string,
-  params: {[param: string]: string},
+  params: { [param: string]: string },
   type: "parse" | "lex"
 ) => void;
 
@@ -77,8 +81,15 @@ interface SyntaxNodeBase {
   descendantForPosition(position: Point): SyntaxNode;
   descendantForPosition(startPosition: Point, endPosition: Point): SyntaxNode;
   namedDescendantForPosition(position: Point): SyntaxNode;
-  namedDescendantForPosition(startPosition: Point, endPosition: Point): SyntaxNode;
-  descendantsOfType<T extends TypeString>(types: T | readonly T[], startPosition?: Point, endPosition?: Point): NodeOfType<T>[];
+  namedDescendantForPosition(
+    startPosition: Point,
+    endPosition: Point
+  ): SyntaxNode;
+  descendantsOfType<T extends TypeString>(
+    types: T | readonly T[],
+    startPosition?: Point,
+    endPosition?: Point
+  ): NodeOfType<T>[];
 
   closest<T extends SyntaxType>(types: T | readonly T[]): NamedNode<T> | null;
   walk(): TreeCursor;
@@ -92,9 +103,9 @@ export interface TreeCursor {
   endPosition: Point;
   startIndex: number;
   endIndex: number;
-  readonly currentNode: SyntaxNode
+  readonly currentNode: SyntaxNode;
 
-  reset(node: SyntaxNode): void
+  reset(node: SyntaxNode): void;
   gotoParent(): boolean;
   gotoFirstChild(): boolean;
   gotoFirstChildForIndex(index: number): boolean;
@@ -111,7 +122,7 @@ export interface Tree {
 }
 
 interface NamedNodeBase extends SyntaxNodeBase {
-    isNamed: true;
+  isNamed: true;
 }
 
 /** An unnamed node with the given type string. */
@@ -120,12 +131,20 @@ export interface UnnamedNode<T extends string = string> extends SyntaxNodeBase {
   isNamed: false;
 }
 
-type PickNamedType<Node, T extends string> = Node extends { type: T; isNamed: true } ? Node : never;
+type PickNamedType<Node, T extends string> = Node extends {
+  type: T;
+  isNamed: true;
+}
+  ? Node
+  : never;
 
 type PickType<Node, T extends string> = Node extends { type: T } ? Node : never;
 
 /** A named node with the given `type` string. */
-export type NamedNode<T extends SyntaxType = SyntaxType> = PickNamedType<SyntaxNode, T>;
+export type NamedNode<T extends SyntaxType = SyntaxType> = PickNamedType<
+  SyntaxNode,
+  T
+>;
 
 /**
  * A node with the given `type` string.
@@ -139,7 +158,9 @@ interface TreeCursorOfType<S extends string, T extends SyntaxNodeBase> {
   currentNode: T;
 }
 
-type TreeCursorRecord = { [K in TypeString]: TreeCursorOfType<K, NodeOfType<K>> };
+type TreeCursorRecord = {
+  [K in TypeString]: TreeCursorOfType<K, NodeOfType<K>>;
+};
 
 /**
  * A tree cursor whose `nodeType` correlates with `currentNode`.
@@ -166,8 +187,8 @@ type TreeCursorRecord = { [K in TypeString]: TreeCursorOfType<K, NodeOfType<K>> 
 export type TypedTreeCursor = TreeCursorRecord[keyof TreeCursorRecord];
 
 export interface ErrorNode extends NamedNodeBase {
-    type: SyntaxType.ERROR;
-    hasError(): true;
+  type: SyntaxType.ERROR;
+  hasError(): true;
 }
 
 export const enum SyntaxType {
@@ -346,12 +367,11 @@ export type UnnamedType =
   | "|-|"
   | "||"
   | "}"
-  | "~"
-  ;
+  | "~";
 
 export type TypeString = SyntaxType | UnnamedType;
 
-export type SyntaxNode = 
+export type SyntaxNode =
   | ActionDeclarationNode
   | ActionListElementNode
   | ActionRefNode
@@ -524,8 +544,7 @@ export type SyntaxNode =
   | UnnamedNode<"||">
   | UnnamedNode<"}">
   | UnnamedNode<"~">
-  | ErrorNode
-  ;
+  | ErrorNode;
 
 export interface ActionDeclarationNode extends NamedNodeBase {
   type: SyntaxType.ActionDeclaration;
@@ -879,4 +898,3 @@ export interface TRUENode extends NamedNodeBase {
 export interface CommentNode extends NamedNodeBase {
   type: SyntaxType.Comment;
 }
-
