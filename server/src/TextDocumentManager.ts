@@ -6,12 +6,15 @@ import {
   Position,
   TextDocumentPositionParams,
 } from "vscode-languageserver";
-import { Range, TextDocument } from "vscode-languageserver-textdocument";
+import { TextDocument } from "vscode-languageserver-textdocument";
 import ScopeNode from "./AST/node/ScopeNode";
 import { parseSource } from "./Parser";
 import Parser, { SyntaxNode } from "tree-sitter";
 import TypeDeclarationNode from "./AST/node/TypeDeclarationNode";
 import VariableDeclarationNode from "./AST/node/VariableDeclarationNode";
+import StructTypeDeclaration from "./AST/node/StructTypeDeclarationNode";
+import HeaderTypeDeclaration from "./AST/node/HeaderTypeDeclarationNode";
+import ASTNode from "./AST/node/ASTNode";
 
 const nodeToDiagnostic = (node: SyntaxNode): Diagnostic => ({
   message: "test",
@@ -56,6 +59,15 @@ export default class TextDocumentManager {
     });
   }
 
+  private getScopeNodeAtPosition(position: TextDocumentPositionParams) {
+    const rootScope = this.scopeRepresentation.get(position.textDocument.uri);
+    if (rootScope) {
+      const scope = rootScope.getScopeNodeAtPosition(position.position);
+      return scope;
+    }
+    return null;
+  }
+
   private getNodeForIdentifierAtPosition(
     _textDocumentPosition: TextDocumentPositionParams
   ) {
@@ -85,6 +97,15 @@ export default class TextDocumentManager {
       _textDocumentPosition
     );
     if (definitionNode) {
+      if (definitionNode instanceof VariableDeclarationNode) {
+        return {
+          uri: doc!.uri,
+          range: {
+            start: definitionNode.startPosition,
+            end: definitionNode.endPosition,
+          },
+        };
+      }
       return {
         uri: doc!.uri,
         range: {
@@ -125,12 +146,45 @@ export default class TextDocumentManager {
   provideCompletion(
     _textDocumentPosition: TextDocumentPositionParams
   ): CompletionItem[] {
+    const posNew: Position = {
+      line: _textDocumentPosition.position.line,
+      character: _textDocumentPosition.position.character - 1,
+    };
     const node = this.getNodeAtPosition(
-      _textDocumentPosition.position,
+      posNew,
       _textDocumentPosition.textDocument.uri
     );
     if (node) {
-      const sibling = node.previousNamedSibling;
+      const closestError = node.closest("ERROR");
+      if (closestError) {
+        const text = closestError.text;
+        const split = text.split(".").reverse();
+        const scopeNode = this.getScopeNodeAtPosition(_textDocumentPosition);
+        if (scopeNode) {
+          let type: ASTNode | null;
+          let variable = scopeNode?.getDeclaredVariable(split.pop()!);
+          type = scopeNode.getDeclaredType(variable!.type);
+          while (split.length > 0) {
+            if (
+              type instanceof StructTypeDeclaration ||
+              type instanceof HeaderTypeDeclaration
+            ) {
+              const c = split.pop()!;
+              if (type.properties[c]) {
+                type = scopeNode.getDeclaredType(type.properties[c].text());
+              }
+            } else {
+              split.pop();
+            }
+          }
+          if (
+            type instanceof StructTypeDeclaration ||
+            type instanceof HeaderTypeDeclaration
+          ) {
+            return Object.keys(type.properties).map((t) => ({ label: t }));
+          }
+        }
+      }
     }
     return [];
   }

@@ -24,7 +24,7 @@ export default class ASTNode {
   }
 
   toJSON(): object {
-    const { parent, ...rest } = this;
+    const { parent, syntaxNode, ...rest } = this;
     return rest;
   }
 

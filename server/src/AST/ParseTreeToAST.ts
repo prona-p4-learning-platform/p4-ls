@@ -25,13 +25,16 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
   let currentScopeNode: ScopeNode;
 
   function recurse(tree: Parser.SyntaxNode): ASTNode {
+    if (tree === null) {
+      return new ASTNode(tree);
+    }
     if (tree.type === "constantDeclaration") {
       const child0 = recurse(tree.namedChild(0)!);
       const child1 = tree.namedChild(1);
       const child2 = recurse(tree.namedChild(2)!);
       const returnVal: ConstantDeclarationNode = new ConstantDeclarationNode(
         tree,
-        child0,
+        child0.text(),
         child1!.text,
         child2
       );
@@ -97,7 +100,7 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
     } else if (tree.type === "parameter") {
       return new ParameterNode(
         tree,
-        recurse(tree.namedChild(0)!),
+        recurse(tree.namedChild(0)!).text(),
         tree.namedChild(1)!.text
       );
     } else if (tree.type === "controlDeclaration") {
@@ -134,8 +137,13 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
       }
     } else if (tree.type === "expression") {
       if (tree.childCount === 3) {
-        const child1 = recurse(tree.namedChild(0)!);
-        const child2 = recurse(tree.namedChild(1)!);
+        const child11 = tree.namedChild(0);
+        const child22 = tree.namedChild(1);
+        if (child11 === null || child22 === null) {
+          return new ASTNode(tree);
+        }
+        const child1 = recurse(child11);
+        const child2 = recurse(child22);
         switch (tree.child(1)!.text) {
           case "-":
             return new SubstrationExpression(tree, child1, child2);

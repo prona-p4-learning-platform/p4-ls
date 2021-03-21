@@ -7,7 +7,7 @@ import VariableDeclarationNode from "./VariableDeclarationNode";
 export default abstract class ScopeNode extends ASTNode {
   private declaredTypes = new Map<string, TypeDeclarationNode>();
   private declaredVariables = new Map<string, VariableDeclarationNode>();
-  private childScopeNodes: ScopeNode[] = [];
+  public childScopeNodes: ScopeNode[] = [];
   constructor(
     private syntaxSubtree: SyntaxNode,
     public kind: string,
@@ -27,12 +27,18 @@ export default abstract class ScopeNode extends ASTNode {
     this.declaredVariables.set(variable.identifier, variable);
   }
 
-  getDeclaredType(identifier: string) {
-    return this.declaredTypes.get(identifier);
+  getDeclaredType(identifier: string): TypeDeclarationNode | null {
+    if (this.declaredTypes.has(identifier)) {
+      return this.declaredTypes.get(identifier)!;
+    }
+    return this.parentScopeNode?.getDeclaredType(identifier) || null;
   }
 
-  getDeclaredVariable(identifier: string) {
-    return this.declaredVariables.get(identifier);
+  getDeclaredVariable(identifier: string): VariableDeclarationNode | null {
+    if (this.declaredVariables.has(identifier)) {
+      return this.declaredVariables.get(identifier)!;
+    }
+    return this.parentScopeNode?.getDeclaredVariable(identifier) || null;
   }
 
   getVariableOrTypeForIdentifierAtPos(
@@ -53,6 +59,21 @@ export default abstract class ScopeNode extends ASTNode {
     }
     if (this.declaredTypes.has(identifier)) {
       return this.getDeclaredType(identifier)!;
+    }
+    return null;
+  }
+
+  getScopeNodeAtPosition(pos: Position): null | ScopeNode {
+    if (this.containsPosition(pos)) {
+      const c = this.childScopeNodes.filter((node) =>
+        node.containsPosition(pos)
+      );
+      if (c.length > 0) {
+        const a = c[0].getScopeNodeAtPosition(pos);
+        if (a !== null) return a;
+      } else {
+        return this;
+      }
     }
     return null;
   }

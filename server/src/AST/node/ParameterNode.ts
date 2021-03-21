@@ -6,9 +6,9 @@ export default class ParameterNode extends VariableDeclarationNode {
   public readonly kind = "ParameterNode";
   constructor(
     subtree: SyntaxNode,
-    public readonly type: ASTNode,
+    public readonly type: string,
     public readonly identifier: string
   ) {
-    super(subtree, identifier);
+    super(subtree, identifier, type);
   }
 }

@@ -6,10 +6,10 @@ export default class ConstantDeclaration extends VariableDeclarationNode {
   public readonly kind = "ConstantDeclaration";
   constructor(
     syntaxNode: SyntaxNode,
-    public readonly type: ASTNode,
+    public readonly type: string,
     public readonly identifier: string,
     public readonly value: ASTNode
   ) {
-    super(syntaxNode, identifier);
+    super(syntaxNode, identifier, type);
   }
 }
