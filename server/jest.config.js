@@ -3,5 +3,5 @@ module.exports = {
   testEnvironment: "node",
   testPathIgnorePatterns: ["node_modules", "out"],
   maxWorkers: 0,
-  maxConcurrency: 1,
+  maxConcurrency: 0,
 };
