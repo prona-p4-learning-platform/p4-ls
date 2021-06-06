@@ -29,7 +29,7 @@ it("provides the position of the definition of a variable identifier", () => {
         line: 157,
       },
       start: {
-        character: 36,
+        character: 19,
         line: 157,
       },
     },
@@ -50,7 +50,7 @@ it("provides the position of the definition of a type identifier", () => {
         line: 42,
       },
       start: {
-        character: 1,
+        character: 0,
         line: 39,
       },
     },

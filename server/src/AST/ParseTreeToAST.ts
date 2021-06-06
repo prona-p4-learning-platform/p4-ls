@@ -116,7 +116,6 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
         .namedChild(0)
         ?.descendantsOfType("parameter")
         .map((child) => recurse(child));
-      console.log("params: ", parameters);
       const node = new ParserDeclarationNode(
         tree.namedChild(0)!.text,
         parameters as ParameterNode[],
@@ -142,7 +141,6 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
         .namedChild(1)
         ?.descendantsOfType("parameter")
         .map((child) => recurse(child));
-      console.log("params: ", parameters);
       const node = new ControlDeclarationNode(
         tree.namedChild(0)!.text,
         parameters as ParameterNode[],
@@ -216,7 +214,6 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
       currentScopeNode = currentScopeNode.getParentScopeNode()!;
       return node;
     } else {
-      console.log(tree.type);
       return tree.namedChildren.map((child) => recurse(child))[0];
     }
   }

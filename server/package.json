@@ -17,8 +17,7 @@
     "vscode-languageserver-textdocument": "^1.0.1"
   },
   "scripts": {
-    "test:unit": "npx ts-mocha  -p tsconfig.json src/**/*.test.ts ",
-    "test:unitdbg": "npx ts-mocha --inspect-brk -p tsconfig.json src/**/*.test.ts "
+    "test:unit": "npx jest "
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
