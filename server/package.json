@@ -12,17 +12,25 @@
     "url": "https://github.com/Microsoft/vscode-extension-samples"
   },
   "dependencies": {
-    "tree-sitter": "^0.18.1",
+    "tree-sitter": "^0.19.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1"
   },
   "scripts": {
-    "test:tree-sitter-corpus": "cd src/tree-sitter-p4/ && npx tree-sitter test ",
-    "test:tree-sitter-parse": "cd src/tree-sitter-p4/ && npx tree-sitter parse test/tutorials/exercises/**/*.p4 --stat --quiet"
+    "test:unit": "npx ava 'test/**/*.test.ts' --verbose"
   },
   "devDependencies": {
+    "ava": "^3.15.0",
     "electron-rebuild": "^2.3.5",
-    "jest": "^26.6.3",
-    "tree-sitter-cli": "^0.18.3"
+    "tree-sitter-cli": "^0.19.3",
+    "ts-node": "^10.0.0"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
   }
 }

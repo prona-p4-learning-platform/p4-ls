@@ -1,15 +1,20 @@
 import {
+  CompletionItem,
   Definition,
   Diagnostic,
   Hover,
   Position,
   TextDocumentPositionParams,
 } from "vscode-languageserver";
-import { Range, TextDocument } from "vscode-languageserver-textdocument";
-import ScopeNode from "./node/ScopeNode";
+import { TextDocument } from "vscode-languageserver-textdocument";
+import ScopeNode from "./AST/node/ScopeNode";
 import { parseSource } from "./Parser";
 import Parser, { SyntaxNode } from "tree-sitter";
-import { logInfo } from "./utils/Logger";
+import TypeDeclarationNode from "./AST/node/TypeDeclarationNode";
+import VariableDeclarationNode from "./AST/node/VariableDeclarationNode";
+import StructTypeDeclaration from "./AST/node/StructTypeDeclarationNode";
+import HeaderTypeDeclaration from "./AST/node/HeaderTypeDeclarationNode";
+import ASTNode from "./AST/node/ASTNode";
 
 const nodeToDiagnostic = (node: SyntaxNode): Diagnostic => ({
   message: "test",
@@ -43,19 +48,6 @@ export default class TextDocumentManager {
     return a;
   }
 
-  private rangeFromNode(node: Parser.SyntaxNode): Range {
-    return {
-      start: {
-        line: node.startPosition.row,
-        character: node.startPosition.column,
-      },
-      end: {
-        line: node.startPosition.row,
-        character: node.startPosition.column,
-      },
-    };
-  }
-
   private getNodeAtPosition(
     position: Position,
     uri: string
@@ -67,43 +59,66 @@ export default class TextDocumentManager {
     });
   }
 
-  provideDefinition(
+  private getScopeNodeAtPosition(position: TextDocumentPositionParams) {
+    const rootScope = this.scopeRepresentation.get(position.textDocument.uri);
+    if (rootScope) {
+      const scope = rootScope.getScopeNodeAtPosition(position.position);
+      return scope;
+    }
+    return null;
+  }
+
+  private getNodeForIdentifierAtPosition(
     _textDocumentPosition: TextDocumentPositionParams
-  ): Definition {
-    const doc = this.documents.get(_textDocumentPosition.textDocument.uri);
+  ) {
     const node = this.getNodeAtPosition(
       _textDocumentPosition.position,
       _textDocumentPosition.textDocument.uri
     );
     if (node) {
-      logInfo("Found identifier to provide definition for: " + node.text);
       const rootScope = this.scopeRepresentation.get(
         _textDocumentPosition.textDocument.uri
       );
-      const definitionNode = rootScope!.findClosestDefinitionForIdentifier(
+      const definitionNode = rootScope!.getVariableOrTypeForIdentifierAtPos(
         node.text,
         _textDocumentPosition.position
       );
       if (definitionNode) {
+        return definitionNode;
+      }
+    }
+  }
+
+  provideDefinition(
+    _textDocumentPosition: TextDocumentPositionParams
+  ): Definition {
+    const doc = this.documents.get(_textDocumentPosition.textDocument.uri);
+    const definitionNode = this.getNodeForIdentifierAtPosition(
+      _textDocumentPosition
+    );
+    if (definitionNode) {
+      if (definitionNode instanceof VariableDeclarationNode) {
         return {
           uri: doc!.uri,
           range: {
-            start: {
-              line: definitionNode.startPosition.row,
-              character: definitionNode.endPosition.column,
-            },
-            end: {
-              line: definitionNode.endPosition.row,
-              character: definitionNode.endPosition.column,
-            },
+            start: definitionNode.startPosition,
+            end: definitionNode.endPosition,
           },
         };
       }
+      return {
+        uri: doc!.uri,
+        range: {
+          start: definitionNode.startPosition,
+          end: definitionNode.endPosition,
+        },
+      };
     }
     const range = {
       start: doc!.positionAt(0),
       end: doc!.positionAt(0),
     };
+
     return {
       uri: doc!.uri,
       range,
@@ -111,22 +126,66 @@ export default class TextDocumentManager {
   }
 
   provideHover(_textDocumentPosition: TextDocumentPositionParams): Hover {
-    const node = this.getNodeAtPosition(
-      _textDocumentPosition.position,
-      _textDocumentPosition.textDocument.uri
+    const definitionNode = this.getNodeForIdentifierAtPosition(
+      _textDocumentPosition
     );
-    if (node) {
-      const rootScope = this.scopeRepresentation.get(
-        _textDocumentPosition.textDocument.uri
-      );
-      const definitionNode = rootScope!.findClosestDefinitionForIdentifier(
-        node.text,
-        _textDocumentPosition.position
-      );
-      if (definitionNode) {
-        return { contents: { language: "P4", value: definitionNode.text } };
+    if (definitionNode) {
+      if (definitionNode instanceof TypeDeclarationNode) {
+        return {
+          contents: { language: "P4", value: definitionNode.text() },
+        };
+      } else if (definitionNode instanceof VariableDeclarationNode) {
+        return {
+          contents: { language: "P4", value: definitionNode.text() },
+        };
       }
     }
     return { contents: "" };
+  }
+
+  provideCompletion(
+    _textDocumentPosition: TextDocumentPositionParams
+  ): CompletionItem[] {
+    const posNew: Position = {
+      line: _textDocumentPosition.position.line,
+      character: _textDocumentPosition.position.character - 1,
+    };
+    const node = this.getNodeAtPosition(
+      posNew,
+      _textDocumentPosition.textDocument.uri
+    );
+    if (node) {
+      const closestError = node.closest("ERROR");
+      if (closestError) {
+        const text = closestError.text;
+        const split = text.split(".").reverse();
+        const scopeNode = this.getScopeNodeAtPosition(_textDocumentPosition);
+        if (scopeNode) {
+          let type: ASTNode | null;
+          let variable = scopeNode?.getDeclaredVariable(split.pop()!);
+          type = scopeNode.getDeclaredType(variable!.type);
+          while (split.length > 0) {
+            if (
+              type instanceof StructTypeDeclaration ||
+              type instanceof HeaderTypeDeclaration
+            ) {
+              const c = split.pop()!;
+              if (type.properties[c]) {
+                type = scopeNode.getDeclaredType(type.properties[c].text());
+              }
+            } else {
+              split.pop();
+            }
+          }
+          if (
+            type instanceof StructTypeDeclaration ||
+            type instanceof HeaderTypeDeclaration
+          ) {
+            return Object.keys(type.properties).map((t) => ({ label: t }));
+          }
+        }
+      }
+    }
+    return [];
   }
 }

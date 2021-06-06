@@ -2,14 +2,18 @@
   "compilerOptions": {
     "target": "es2019",
     "lib": ["ES2019"],
-    "module": "commonjs",
-    "moduleResolution": "node",
     "esModuleInterop": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
     "sourceMap": true,
     "strict": true,
-    "outDir": "out",
-    "rootDir": "src"
+    "outDir": "out"
   },
-  "include": ["src", "out/tree-sitter-p4/index.js"],
+  "include": [
+    "src",
+    "out/tree-sitter-p4/index.js",
+    "../tree-sitter-p4",
+    "test"
+  ],
   "exclude": ["node_modules", ".vscode-test"]
 }

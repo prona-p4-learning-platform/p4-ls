@@ -1,6 +1,6 @@
 import Parser from "tree-sitter";
 //@ts-ignore
-import P4 from "./index";
+import P4 from "./bindings/node/index.js";
 const parser = new Parser();
 parser.setLanguage(P4);
 
