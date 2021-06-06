@@ -3,7 +3,9 @@ import ScopeNode from "./AST/node/ScopeNode";
 import parse from "../../tree-sitter-p4/parse";
 import { createAST } from "./AST/ParseTreeToAST";
 
-export function parseSource(source: string): {
+export function parseSource(
+  source: string
+): {
   scopeTreeRoot: ScopeNode;
   parseTreeRoot: Parser.SyntaxNode;
 } {
