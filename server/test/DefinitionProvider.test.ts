@@ -1,3 +1,4 @@
+import test from "ava";
 import TextDocumentManager from "../src/TextDocumentManager";
 import DefinitionProvider from "../src/DefinitionProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -13,16 +14,15 @@ const textDocument = TextDocument.create(
   1,
   readFileSync(path.resolve(__dirname, "code.p4"), { encoding: "utf8" })
 );
-beforeAll(() => {
-  docManager.update(textDocument);
-});
 
-it("provides the position of the definition of a variable identifier", () => {
+docManager.update(textDocument);
+
+test("provides the position of the definition of a variable identifier", (t) => {
   const definition = definitionProvider({
     position: { line: 159, character: 11 },
     textDocument,
   });
-  assert.deepStrictEqual(definition, {
+  t.deepEqual(definition, {
     range: {
       end: {
         character: 36,
@@ -37,13 +37,13 @@ it("provides the position of the definition of a variable identifier", () => {
   });
 });
 
-it("provides the position of the definition of a type identifier", () => {
+test("provides the position of the definition of a type identifier", (t) => {
   const definition = definitionProvider({
     position: { line: 157, character: 45 },
     textDocument,
   });
 
-  assert.deepStrictEqual(definition, {
+  t.deepEqual(definition, {
     range: {
       end: {
         character: 1,

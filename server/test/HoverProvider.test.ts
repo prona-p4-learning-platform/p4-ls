@@ -1,3 +1,4 @@
+import test from "ava";
 import TextDocumentManager from "../src/TextDocumentManager";
 import HoverProvider from "../src/HoverProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -13,16 +14,14 @@ const textDocument = TextDocument.create(
   1,
   readFileSync(path.resolve(__dirname, "code.p4"), { encoding: "utf8" })
 );
-beforeAll(() => {
-  docManager.update(textDocument);
-});
+docManager.update(textDocument);
 
-it("shows the declaration source code excerpt if hovering over a type", () => {
+test("shows the declaration source code excerpt if hovering over a type", (t) => {
   const hover = hoverProvider({
     position: { line: 157, character: 45 },
     textDocument,
   });
-  assert.deepStrictEqual(hover, {
+  t.deepEqual(hover, {
     contents: {
       language: "P4",
       value:
