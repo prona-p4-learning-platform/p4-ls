@@ -21,5 +21,4 @@ jobs:
           CI: true
       - run: npm run compile:ls
       - run: cd server && npm run test:unit
-      - run: cd server && npm run test:tree-sitter-corpus
-      - run: cd server && npm run test:tree-sitter-parse
+      - run: cd tree-sitter-p4 && npm run test && npm run test:p4tutorials
