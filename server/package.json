@@ -12,23 +12,20 @@
     "url": "https://github.com/Microsoft/vscode-extension-samples"
   },
   "dependencies": {
-    "@asgerf/dts-tree-sitter": "^0.1.0",
     "tree-sitter": "^0.19.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1"
   },
   "scripts": {
-    "test:tree-sitter-corpus": "cd src/tree-sitter-p4/ && npx tree-sitter test ",
-    "test:tree-sitter-parse": "cd src/tree-sitter-p4/ && npx tree-sitter parse test/tutorials/exercises/**/*.p4 --stat --quiet",
     "test:unit": "npx ts-mocha  -p tsconfig.json src/**/*.test.ts ",
-    "test:unitdbg": "npx ts-mocha --inspect-brk -p tsconfig.json src/**/*.test.ts ",
-    "generate-p4-types": "node node_modules/@asgerf/dts-tree-sitter/build/src/index.js ./src/tree-sitter-p4/src/ > ./src/tree-sitter-p4/P4Parser.d.ts"
+    "test:unitdbg": "npx ts-mocha --inspect-brk -p tsconfig.json src/**/*.test.ts "
   },
   "devDependencies": {
-    "@types/mocha": "^8.2.1",
+    "@types/jest": "^26.0.23",
     "electron-rebuild": "^2.3.5",
-    "mocha": "^8.3.2",
+    "jest": "^27.0.4",
     "tree-sitter-cli": "^0.19.3",
+    "ts-jest": "^27.0.3",
     "ts-mocha": "^8.0.0"
   }
 }

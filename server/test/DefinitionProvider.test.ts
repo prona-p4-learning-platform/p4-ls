@@ -1,5 +1,5 @@
-import TextDocumentManager from "../TextDocumentManager";
-import DefinitionProvider from "../DefinitionProvider";
+import TextDocumentManager from "../src/TextDocumentManager";
+import DefinitionProvider from "../src/DefinitionProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { readFileSync } from "fs";
 import assert from "assert";
@@ -13,7 +13,7 @@ const textDocument = TextDocument.create(
   1,
   readFileSync(path.resolve(__dirname, "code.p4"), { encoding: "utf8" })
 );
-before(() => {
+beforeAll(() => {
   docManager.update(textDocument);
 });
 

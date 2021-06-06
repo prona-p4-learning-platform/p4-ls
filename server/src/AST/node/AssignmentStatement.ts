@@ -9,4 +9,8 @@ export default class AssignmentStatement extends ASTNode {
   ) {
     super(subtree);
   }
+
+  deriveType() {
+    //this.rhs.deriveType()
+  }
 }

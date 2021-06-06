@@ -7,9 +7,13 @@
     "module": "commonjs",
     "sourceMap": true,
     "strict": true,
-    "outDir": "out",
-    "rootDir": "src"
+    "outDir": "out"
   },
-  "include": ["src", "out/tree-sitter-p4/index.js"],
+  "include": [
+    "src",
+    "out/tree-sitter-p4/index.js",
+    "../tree-sitter-p4",
+    "test"
+  ],
   "exclude": ["node_modules", ".vscode-test"]
 }

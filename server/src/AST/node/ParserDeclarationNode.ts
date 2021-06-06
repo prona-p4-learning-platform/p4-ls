@@ -3,7 +3,7 @@ import ASTNode from "./ASTNode";
 import ParameterNode from "./ParameterNode";
 import ScopeNode from "./ScopeNode";
 
-export default class ActionDeclarationNode extends ScopeNode {
+export default class ParserDeclarationNode extends ScopeNode {
   public statements: ASTNode[] = [];
   constructor(
     public readonly name: string,
@@ -11,11 +11,20 @@ export default class ActionDeclarationNode extends ScopeNode {
     parentScopeNode: ScopeNode,
     subtree: SyntaxNode
   ) {
-    super(subtree, "ActionDeclarationNode", parentScopeNode);
+    super(subtree, "ParserDeclaration", parentScopeNode);
     parameters.forEach((param) => this.addDeclaredVariable(param));
   }
 
   public setStatements(statements: ASTNode[]) {
     this.statements = statements;
+    this.children = statements;
+  }
+
+  toJSON(): object {
+    return {
+      kind: this.kind,
+      children: this.children,
+      parameters: this.parameters,
+    };
   }
 }

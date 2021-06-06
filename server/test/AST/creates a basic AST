@@ -520,19 +520,7 @@
             "character": 35
           },
           "identifier": "hdr",
-          "type": {
-            "children": [],
-            "kind": "Identifier",
-            "startPosition": {
-              "line": 1,
-              "character": 24
-            },
-            "endPosition": {
-              "line": 1,
-              "character": 31
-            },
-            "identifier": "headers"
-          }
+          "type": "headers"
         },
         {
           "children": [],
@@ -546,19 +534,7 @@
             "character": 23
           },
           "identifier": "meta",
-          "type": {
-            "children": [],
-            "kind": "Identifier",
-            "startPosition": {
-              "line": 2,
-              "character": 10
-            },
-            "endPosition": {
-              "line": 2,
-              "character": 18
-            },
-            "identifier": "metadata"
-          }
+          "type": "metadata"
         },
         {
           "children": [],
@@ -572,19 +548,7 @@
             "character": 47
           },
           "identifier": "standard_metadata",
-          "type": {
-            "children": [],
-            "kind": "Identifier",
-            "startPosition": {
-              "line": 3,
-              "character": 10
-            },
-            "endPosition": {
-              "line": 3,
-              "character": 29
-            },
-            "identifier": "standard_metadata_t"
-          }
+          "type": "standard_metadata_t"
         }
       ]
     }

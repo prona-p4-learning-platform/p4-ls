@@ -130,12 +130,13 @@ control MyIngress(inout headers hdr,
         (statementOrDeclaration
           (statement
             (assignmentOrMethodCallStatement
-              (lvalue
+              (methodCallStatement
                 (lvalue
-                  (prefixedNonType
-                    (IDENTIFIER)))
-                (name
-                  (IDENTIFIER))))))))))
+                  (lvalue
+                    (prefixedNonType
+                      (IDENTIFIER)))
+                  (name
+                    (IDENTIFIER)))))))))))
 
 ================================================================================
 control with actions
@@ -196,13 +197,14 @@ control MyIngress(inout headers hdr,
             (statementOrDeclaration
               (statement
                 (assignmentOrMethodCallStatement
-                  (lvalue
-                    (prefixedNonType
-                      (IDENTIFIER)))
-                  (argumentList
-                    (argument
-                      (expression
-                        (IDENTIFIER))))))))))
+                  (methodCallStatement
+                    (lvalue
+                      (prefixedNonType
+                        (IDENTIFIER)))
+                    (argumentList
+                      (argument
+                        (expression
+                          (IDENTIFIER)))))))))))
       (controlLocalDeclaration
         (actionDeclaration
           (name
@@ -229,12 +231,13 @@ control MyIngress(inout headers hdr,
         (statementOrDeclaration
           (statement
             (assignmentOrMethodCallStatement
-              (lvalue
+              (methodCallStatement
                 (lvalue
-                  (prefixedNonType
-                    (IDENTIFIER)))
-                (name
-                  (IDENTIFIER))))))))))
+                  (lvalue
+                    (prefixedNonType
+                      (IDENTIFIER)))
+                  (name
+                    (IDENTIFIER)))))))))))
 
 ================================================================================
 control with actions 2

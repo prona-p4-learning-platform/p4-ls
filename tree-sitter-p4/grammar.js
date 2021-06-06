@@ -312,10 +312,11 @@ module.exports = grammar({
         $.name,
         "{",
         optional(repeat($.parserStatement)),
-        optional(seq("transition", $.stateExpression)),
+        optional($.stateExpression),
         "}"
       ),
-    stateExpression: ($) => choice(seq($.name, ";"), $.selectExpression),
+    stateExpression: ($) =>
+      seq("transition", choice(seq($.name, ";"), $.selectExpression)),
     selectExpression: ($) =>
       seq(
         "select",

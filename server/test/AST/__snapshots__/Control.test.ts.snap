@@ -1,0 +1,560 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a control AST 1`] = `
+Object {
+  "children": Array [
+    Object {
+      "children": Array [
+        Object {
+          "children": Array [
+            Object {
+              "callee": Object {
+                "children": Array [],
+                "endPosition": Object {
+                  "character": 20,
+                  "line": 6,
+                },
+                "identifier": "mark_to_drop",
+                "kind": "Identifier",
+                "startPosition": Object {
+                  "character": 8,
+                  "line": 6,
+                },
+              },
+              "children": Array [],
+              "endPosition": Object {
+                "character": 40,
+                "line": 6,
+              },
+              "kind": "MethodCallStatement",
+              "parameters": Array [
+                Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 38,
+                    "line": 6,
+                  },
+                  "identifier": "standard_metadata",
+                  "kind": "Identifier",
+                  "startPosition": Object {
+                    "character": 21,
+                    "line": 6,
+                  },
+                },
+              ],
+              "startPosition": Object {
+                "character": 8,
+                "line": 6,
+              },
+            },
+          ],
+          "kind": "ActionDeclarationNode",
+        },
+        Object {
+          "children": Array [
+            Object {
+              "children": Array [],
+              "endPosition": Object {
+                "character": 45,
+                "line": 10,
+              },
+              "kind": "AssignmentStatement",
+              "lhs": Object {
+                "children": Array [],
+                "endPosition": Object {
+                  "character": 37,
+                  "line": 10,
+                },
+                "kind": "PropertyAccessExpression",
+                "lhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 25,
+                    "line": 10,
+                  },
+                  "identifier": "standard_metadata",
+                  "kind": "Identifier",
+                  "startPosition": Object {
+                    "character": 8,
+                    "line": 10,
+                  },
+                },
+                "rhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 37,
+                    "line": 10,
+                  },
+                  "identifier": "egress_spec",
+                  "kind": "Identifier",
+                  "startPosition": Object {
+                    "character": 26,
+                    "line": 10,
+                  },
+                },
+                "startPosition": Object {
+                  "character": 8,
+                  "line": 10,
+                },
+              },
+              "rhs": Object {
+                "children": Array [],
+                "endPosition": Object {
+                  "character": 44,
+                  "line": 10,
+                },
+                "identifier": "port",
+                "kind": "Identifier",
+                "startPosition": Object {
+                  "character": 40,
+                  "line": 10,
+                },
+              },
+              "startPosition": Object {
+                "character": 8,
+                "line": 10,
+              },
+            },
+            Object {
+              "children": Array [],
+              "endPosition": Object {
+                "character": 52,
+                "line": 11,
+              },
+              "kind": "AssignmentStatement",
+              "lhs": Object {
+                "children": Array [],
+                "endPosition": Object {
+                  "character": 28,
+                  "line": 11,
+                },
+                "kind": "PropertyAccessExpression",
+                "lhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 20,
+                    "line": 11,
+                  },
+                  "kind": "PropertyAccessExpression",
+                  "lhs": Object {
+                    "children": Array [],
+                    "endPosition": Object {
+                      "character": 11,
+                      "line": 11,
+                    },
+                    "identifier": "hdr",
+                    "kind": "Identifier",
+                    "startPosition": Object {
+                      "character": 8,
+                      "line": 11,
+                    },
+                  },
+                  "rhs": Object {
+                    "children": Array [],
+                    "endPosition": Object {
+                      "character": 20,
+                      "line": 11,
+                    },
+                    "identifier": "ethernet",
+                    "kind": "Identifier",
+                    "startPosition": Object {
+                      "character": 12,
+                      "line": 11,
+                    },
+                  },
+                  "startPosition": Object {
+                    "character": 8,
+                    "line": 11,
+                  },
+                },
+                "rhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 28,
+                    "line": 11,
+                  },
+                  "identifier": "srcAddr",
+                  "kind": "Identifier",
+                  "startPosition": Object {
+                    "character": 21,
+                    "line": 11,
+                  },
+                },
+                "startPosition": Object {
+                  "character": 8,
+                  "line": 11,
+                },
+              },
+              "rhs": Object {
+                "children": Array [],
+                "endPosition": Object {
+                  "character": 51,
+                  "line": 11,
+                },
+                "kind": "PropertyAccessExpression",
+                "lhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 43,
+                    "line": 11,
+                  },
+                  "kind": "PropertyAccessExpression",
+                  "lhs": Object {
+                    "children": Array [],
+                    "endPosition": Object {
+                      "character": 34,
+                      "line": 11,
+                    },
+                    "identifier": "hdr",
+                    "kind": "Identifier",
+                    "startPosition": Object {
+                      "character": 31,
+                      "line": 11,
+                    },
+                  },
+                  "rhs": Object {
+                    "children": Array [],
+                    "endPosition": Object {
+                      "character": 43,
+                      "line": 11,
+                    },
+                    "identifier": "ethernet",
+                    "kind": "Identifier",
+                    "startPosition": Object {
+                      "character": 35,
+                      "line": 11,
+                    },
+                  },
+                  "startPosition": Object {
+                    "character": 31,
+                    "line": 11,
+                  },
+                },
+                "rhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 51,
+                    "line": 11,
+                  },
+                  "identifier": "dstAddr",
+                  "kind": "Identifier",
+                  "startPosition": Object {
+                    "character": 44,
+                    "line": 11,
+                  },
+                },
+                "startPosition": Object {
+                  "character": 31,
+                  "line": 11,
+                },
+              },
+              "startPosition": Object {
+                "character": 8,
+                "line": 11,
+              },
+            },
+            Object {
+              "children": Array [],
+              "endPosition": Object {
+                "character": 39,
+                "line": 12,
+              },
+              "kind": "AssignmentStatement",
+              "lhs": Object {
+                "children": Array [],
+                "endPosition": Object {
+                  "character": 28,
+                  "line": 12,
+                },
+                "kind": "PropertyAccessExpression",
+                "lhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 20,
+                    "line": 12,
+                  },
+                  "kind": "PropertyAccessExpression",
+                  "lhs": Object {
+                    "children": Array [],
+                    "endPosition": Object {
+                      "character": 11,
+                      "line": 12,
+                    },
+                    "identifier": "hdr",
+                    "kind": "Identifier",
+                    "startPosition": Object {
+                      "character": 8,
+                      "line": 12,
+                    },
+                  },
+                  "rhs": Object {
+                    "children": Array [],
+                    "endPosition": Object {
+                      "character": 20,
+                      "line": 12,
+                    },
+                    "identifier": "ethernet",
+                    "kind": "Identifier",
+                    "startPosition": Object {
+                      "character": 12,
+                      "line": 12,
+                    },
+                  },
+                  "startPosition": Object {
+                    "character": 8,
+                    "line": 12,
+                  },
+                },
+                "rhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 28,
+                    "line": 12,
+                  },
+                  "identifier": "dstAddr",
+                  "kind": "Identifier",
+                  "startPosition": Object {
+                    "character": 21,
+                    "line": 12,
+                  },
+                },
+                "startPosition": Object {
+                  "character": 8,
+                  "line": 12,
+                },
+              },
+              "rhs": Object {
+                "children": Array [],
+                "endPosition": Object {
+                  "character": 38,
+                  "line": 12,
+                },
+                "identifier": "dstAddr",
+                "kind": "Identifier",
+                "startPosition": Object {
+                  "character": 31,
+                  "line": 12,
+                },
+              },
+              "startPosition": Object {
+                "character": 8,
+                "line": 12,
+              },
+            },
+            Object {
+              "children": Array [],
+              "endPosition": Object {
+                "character": 40,
+                "line": 13,
+              },
+              "kind": "AssignmentStatement",
+              "lhs": Object {
+                "children": Array [],
+                "endPosition": Object {
+                  "character": 20,
+                  "line": 13,
+                },
+                "kind": "PropertyAccessExpression",
+                "lhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 16,
+                    "line": 13,
+                  },
+                  "kind": "PropertyAccessExpression",
+                  "lhs": Object {
+                    "children": Array [],
+                    "endPosition": Object {
+                      "character": 11,
+                      "line": 13,
+                    },
+                    "identifier": "hdr",
+                    "kind": "Identifier",
+                    "startPosition": Object {
+                      "character": 8,
+                      "line": 13,
+                    },
+                  },
+                  "rhs": Object {
+                    "children": Array [],
+                    "endPosition": Object {
+                      "character": 16,
+                      "line": 13,
+                    },
+                    "identifier": "ipv4",
+                    "kind": "Identifier",
+                    "startPosition": Object {
+                      "character": 12,
+                      "line": 13,
+                    },
+                  },
+                  "startPosition": Object {
+                    "character": 8,
+                    "line": 13,
+                  },
+                },
+                "rhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 20,
+                    "line": 13,
+                  },
+                  "identifier": "ttl",
+                  "kind": "Identifier",
+                  "startPosition": Object {
+                    "character": 17,
+                    "line": 13,
+                  },
+                },
+                "startPosition": Object {
+                  "character": 8,
+                  "line": 13,
+                },
+              },
+              "rhs": Object {
+                "children": Array [],
+                "endPosition": Object {
+                  "character": 39,
+                  "line": 13,
+                },
+                "kind": "SubstrationExpression",
+                "lhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 35,
+                    "line": 13,
+                  },
+                  "kind": "PropertyAccessExpression",
+                  "lhs": Object {
+                    "children": Array [],
+                    "endPosition": Object {
+                      "character": 31,
+                      "line": 13,
+                    },
+                    "kind": "PropertyAccessExpression",
+                    "lhs": Object {
+                      "children": Array [],
+                      "endPosition": Object {
+                        "character": 26,
+                        "line": 13,
+                      },
+                      "identifier": "hdr",
+                      "kind": "Identifier",
+                      "startPosition": Object {
+                        "character": 23,
+                        "line": 13,
+                      },
+                    },
+                    "rhs": Object {
+                      "children": Array [],
+                      "endPosition": Object {
+                        "character": 31,
+                        "line": 13,
+                      },
+                      "identifier": "ipv4",
+                      "kind": "Identifier",
+                      "startPosition": Object {
+                        "character": 27,
+                        "line": 13,
+                      },
+                    },
+                    "startPosition": Object {
+                      "character": 23,
+                      "line": 13,
+                    },
+                  },
+                  "rhs": Object {
+                    "children": Array [],
+                    "endPosition": Object {
+                      "character": 35,
+                      "line": 13,
+                    },
+                    "identifier": "ttl",
+                    "kind": "Identifier",
+                    "startPosition": Object {
+                      "character": 32,
+                      "line": 13,
+                    },
+                  },
+                  "startPosition": Object {
+                    "character": 23,
+                    "line": 13,
+                  },
+                },
+                "rhs": Object {
+                  "children": Array [],
+                  "endPosition": Object {
+                    "character": 39,
+                    "line": 13,
+                  },
+                  "kind": "Integer",
+                  "startPosition": Object {
+                    "character": 38,
+                    "line": 13,
+                  },
+                  "value": "1",
+                },
+                "startPosition": Object {
+                  "character": 23,
+                  "line": 13,
+                },
+              },
+              "startPosition": Object {
+                "character": 8,
+                "line": 13,
+              },
+            },
+          ],
+          "kind": "ActionDeclarationNode",
+        },
+      ],
+      "kind": "ControlDeclaration",
+      "parameters": Array [
+        Object {
+          "children": Array [],
+          "endPosition": Object {
+            "character": 35,
+            "line": 1,
+          },
+          "identifier": "hdr",
+          "kind": "ParameterNode",
+          "startPosition": Object {
+            "character": 18,
+            "line": 1,
+          },
+          "type": "headers",
+        },
+        Object {
+          "children": Array [],
+          "endPosition": Object {
+            "character": 23,
+            "line": 2,
+          },
+          "identifier": "meta",
+          "kind": "ParameterNode",
+          "startPosition": Object {
+            "character": 4,
+            "line": 2,
+          },
+          "type": "metadata",
+        },
+        Object {
+          "children": Array [],
+          "endPosition": Object {
+            "character": 47,
+            "line": 3,
+          },
+          "identifier": "standard_metadata",
+          "kind": "ParameterNode",
+          "startPosition": Object {
+            "character": 4,
+            "line": 3,
+          },
+          "type": "standard_metadata_t",
+        },
+      ],
+    },
+  ],
+  "kind": "File",
+}
+`;

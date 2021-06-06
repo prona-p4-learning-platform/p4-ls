@@ -18,8 +18,12 @@ import IdentifierNode from "./node/IdentifierNode";
 import IntegerNode from "./node/IntegerNode";
 import MethodCallStatement from "./node/MethodCallStatement";
 import ParameterNode from "./node/ParameterNode";
+import ParserDeclarationNode from "./node/ParserDeclarationNode";
+import ParserStateNode from "./node/ParserStateNode";
 import ScopeNode from "./node/ScopeNode";
 import StructTypeDeclarationNode from "./node/StructTypeDeclarationNode";
+import ParserStateExpression from "./node/ParserStateExpression";
+import CommentNode from "./node/CommentNode";
 
 export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
   let currentScopeNode: ScopeNode;
@@ -41,6 +45,8 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
       returnVal.children = [child0, child2];
       currentScopeNode.addDeclaredVariable(returnVal);
       return returnVal;
+    } else if (tree.type === "comment") {
+      return new CommentNode(tree, tree.text);
     } else if (tree.type === "source_file") {
       currentScopeNode = new FileNode(tree);
       (currentScopeNode as FileNode).setStatements(
@@ -56,6 +62,8 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
       return node;
     } else if (tree.type === "name") {
       return new IdentifierNode(tree, tree.text);
+    } else if (tree.type === "stateExpression") {
+      return new ParserStateExpression(tree);
     } else if (tree.type === "headerTypeDeclaration") {
       const structProps: { [key: string]: ASTNode } = {};
       tree
@@ -103,6 +111,32 @@ export const createAST = (rootNode: Parser.SyntaxNode): ASTNode => {
         recurse(tree.namedChild(0)!).text(),
         tree.namedChild(1)!.text
       );
+    } else if (tree.type === "parserDeclaration") {
+      const parameters = tree
+        .namedChild(0)
+        ?.descendantsOfType("parameter")
+        .map((child) => recurse(child));
+      console.log("params: ", parameters);
+      const node = new ParserDeclarationNode(
+        tree.namedChild(0)!.text,
+        parameters as ParameterNode[],
+        currentScopeNode,
+        tree
+      );
+      currentScopeNode = node;
+      node.setStatements(
+        tree
+          .descendantsOfType(["parserLocalElement", "parserState"])
+          .map((child) => recurse(child))
+      );
+      currentScopeNode = node.getParentScopeNode()!;
+      return node;
+    } else if (tree.type === "parserState") {
+      const [firstNamedChild, ...rest] = tree.namedChildren;
+      const name = firstNamedChild.text;
+      const node = new ParserStateNode(name, tree);
+      node.setStatements(rest.map((child) => recurse(child)));
+      return node;
     } else if (tree.type === "controlDeclaration") {
       const parameters = tree
         .namedChild(1)
