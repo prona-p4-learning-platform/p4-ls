@@ -10,9 +10,7 @@ standard includes
 
 (source_file
   (comment)
-  (declaration
-    (preproc_include
-      (STRING_LITERAL)))
-  (declaration
-    (preproc_include
-      (STRING_LITERAL))))
+  (preproc_include
+    (STRING_LITERAL))
+  (preproc_include
+    (STRING_LITERAL)))

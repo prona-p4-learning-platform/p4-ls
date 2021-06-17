@@ -10,27 +10,21 @@ typedef bit<32> ip4Addr_t;
 --------------------------------------------------------------------------------
 
 (source_file
-  (declaration
-    (typeDeclaration
-      (typedefDeclaration
-        (typeRef
-          (baseType
-            (INTEGER)))
-        (name
-          (IDENTIFIER)))))
-  (declaration
-    (typeDeclaration
-      (typedefDeclaration
-        (typeRef
-          (baseType
-            (INTEGER)))
-        (name
-          (IDENTIFIER)))))
-  (declaration
-    (typeDeclaration
-      (typedefDeclaration
-        (typeRef
-          (baseType
-            (INTEGER)))
-        (name
-          (IDENTIFIER))))))
+  (typedefDeclaration
+    (typeRef
+      (baseType
+        (INTEGER)))
+    (name
+      (IDENTIFIER)))
+  (typedefDeclaration
+    (typeRef
+      (baseType
+        (INTEGER)))
+    (name
+      (IDENTIFIER)))
+  (typedefDeclaration
+    (typeRef
+      (baseType
+        (INTEGER)))
+    (name
+      (IDENTIFIER))))

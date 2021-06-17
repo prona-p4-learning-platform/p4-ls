@@ -16,6 +16,8 @@
     "tree-sitter-cli": "^0.19.3"
   },
   "scripts": {
+    "preinstall": "npx tree-sitter-cli generate",
+    "postinstall": "build.sh",
     "test": "tree-sitter test",
     "test:p4tutorials": "npx tree-sitter parse test/tutorials/exercises/**/*.p4 --stat --quiet"
   }

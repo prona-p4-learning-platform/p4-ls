@@ -3,8 +3,8 @@ import TextDocumentManager from "../src/TextDocumentManager";
 import DefinitionProvider from "../src/DefinitionProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { readFileSync } from "fs";
-import assert from "assert";
 import path from "path";
+import { Location } from "vscode-languageserver";
 
 const docManager = new TextDocumentManager();
 const definitionProvider = DefinitionProvider(docManager);
@@ -12,9 +12,10 @@ const textDocument = TextDocument.create(
   "test",
   "p4",
   1,
-  readFileSync(path.resolve(__dirname, "code.p4"), { encoding: "utf8" })
+  readFileSync(path.resolve(__dirname, "code.p4"), {
+    encoding: "utf8",
+  })
 );
-
 docManager.update(textDocument);
 
 test("provides the position of the definition of a variable identifier", (t) => {
@@ -22,19 +23,10 @@ test("provides the position of the definition of a variable identifier", (t) => 
     position: { line: 159, character: 11 },
     textDocument,
   });
-  t.deepEqual(definition, {
-    range: {
-      end: {
-        character: 36,
-        line: 157,
-      },
-      start: {
-        character: 19,
-        line: 157,
-      },
-    },
-    uri: "test",
-  });
+  t.deepEqual(
+    textDocument.getText((definition as Location).range),
+    "packet_out packet"
+  );
 });
 
 test("provides the position of the definition of a type identifier", (t) => {
@@ -42,18 +34,5 @@ test("provides the position of the definition of a type identifier", (t) => {
     position: { line: 157, character: 45 },
     textDocument,
   });
-
-  t.deepEqual(definition, {
-    range: {
-      end: {
-        character: 1,
-        line: 42,
-      },
-      start: {
-        character: 0,
-        line: 39,
-      },
-    },
-    uri: "test",
-  });
+  t.snapshot(textDocument.getText((definition as Location).range));
 });

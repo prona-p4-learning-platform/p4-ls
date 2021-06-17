@@ -9,6 +9,3 @@ if [ "$ELECTRON_VERSION" ]; then
 	echo "Done building for electron."
 fi
 
-mkdir -p ../../out
-cp -r build ../../out/tree-sitter-p4/
-cp -r bindings ../../out/tree-sitter-p4/
