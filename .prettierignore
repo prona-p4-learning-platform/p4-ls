@@ -1,3 +1,4 @@
 client/out
 server/out
-tree-sitter-p4/test/tutorials
+tree-sitter-p4
+server/src/tree-sitter-p4.d.ts

@@ -3,4 +3,4 @@ client/node_modules/**
 client/out/**
 server/node_modules/**
 server/out/**
-server/tree-sitter-p4/node_modules/**
+server/tree-sitter-p4/**
