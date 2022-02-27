@@ -12,6 +12,5 @@
   "references": [
     { "path": "./client" },
     { "path": "./server" },
-    { "path": "./tree-sitter-p4" }
   ]
 }

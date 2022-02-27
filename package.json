@@ -70,8 +70,8 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -b",
     "watch": "tsc -b -w",
-    "postinstall": "cd client && npm install && cd ../server && npm install && cd .. && cd tree-sitter-p4 && npm install",
-    "compile:ls": "npm run compile && npm rebuild && cd tree-sitter-p4/ && bash ./build.sh && cd ../ ",
+    "postinstall": "cd client && npm i && cd ../server && npm i",
+    "compile:ls": "npm run compile && npm rebuild",
     "lint": "eslint . && prettier --check ."
   },
   "devDependencies": {

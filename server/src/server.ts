@@ -17,10 +17,7 @@ import {
   TextDocumentSyncKind,
   InitializeResult,
 } from "vscode-languageserver/node";
-import DefinitionProviderCreator from "./DefinitionProvider";
-import HoverProviderCreator from "./HoverProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import CompletionProvider from "./CompletionProvider";
 
 // The example settings
 interface ExampleSettings {
