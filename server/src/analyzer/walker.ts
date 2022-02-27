@@ -38,7 +38,7 @@ function analyse(rootNode: Parser.Tree, diagnostics: Diagnostic[]) {
   let knownTypes = new Map<string, Type>();
   let currentType: Type | undefined = undefined;
   let currentTypeName: string = "";
-  for (const node of walk(rootNode.walk() as TreeCursor)) {
+  for (const { node } of walk(rootNode.walk() as TreeCursor)) {
     if (node.isNamed) {
       console.log(node.type);
     }
