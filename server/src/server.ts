@@ -17,7 +17,6 @@ import {
   TextDocumentSyncKind,
   InitializeResult,
 } from "vscode-languageserver/node";
-import TextDocumentManager from "./TextDocumentManager";
 import DefinitionProviderCreator from "./DefinitionProvider";
 import HoverProviderCreator from "./HoverProvider";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -32,7 +31,6 @@ class P4LanguageServer {
   public connection: Connection;
 
   // Create a simple text document manager.
-  private documentManager = new TextDocumentManager();
   private documents: TextDocuments<TextDocument> = new TextDocuments(
     TextDocument
   );
@@ -138,14 +136,6 @@ class P4LanguageServer {
       this.connection.console.log("We received an file change event");
     });
 
-    this.connection.onDefinition(
-      DefinitionProviderCreator(this.documentManager)
-    );
-    this.connection.onHover(HoverProviderCreator(this.documentManager));
-
-    // This handler provides the initial list of the completion items.
-    this.connection.onCompletion(CompletionProvider(this.documentManager));
-
     // This handler resolves additional information for the item selected in
     // the completion list.
     this.connection.onCompletionResolve(
@@ -187,11 +177,6 @@ class P4LanguageServer {
   async validateTextDocument(textDocument: TextDocument): Promise<void> {
     let settings = await this.getDocumentSettings(textDocument.uri);
     let diagnostics: Diagnostic[] = [];
-    try {
-      diagnostics = [...this.documentManager.update(textDocument)];
-    } catch (ex) {
-      this.connection.console.log(ex);
-    }
 
     // Send the computed diagnostics to VSCode.
     this.connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });

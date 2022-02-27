@@ -18,9 +18,10 @@
     "vscode-languageserver-textdocument": "^1.0.1"
   },
   "scripts": {
-    "test:unit": "npx ava ",
+    "test:unit": "npx ava **/*/*.test.ts",
     "test": "npm run test:unit",
-    "generate-treesitter-types": "node ./node_modules/@asgerf/dts-tree-sitter/build/src/index.js ../tree-sitter-p4/src/node-types.json > src/tree-sitter-p4.d.ts"
+    "generate-treesitter-types": "node ./node_modules/@asgerf/dts-tree-sitter/build/src/index.js ../tree-sitter-p4/src/node-types.json > src/tree-sitter-p4.d.ts",
+    "copy-files": "cp -r ../tree-sitter-p4/bindings ./out/tree-sitter-p4/"
   },
   "devDependencies": {
     "ava": "^3.15.0",

@@ -9,11 +9,6 @@
     "strict": true,
     "outDir": "out"
   },
-  "include": [
-    "src",
-    "out/tree-sitter-p4/index.js",
-    "../tree-sitter-p4",
-    "test"
-  ],
+  "include": ["src"],
   "exclude": ["node_modules", ".vscode-test"]
 }

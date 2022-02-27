@@ -187,15 +187,15 @@ export const enum SyntaxType {
   AnnotationToken = "annotationToken",
   Argument = "argument",
   ArgumentList = "argumentList",
-  AssignmentOrMethodCallStatement = "assignmentOrMethodCallStatement",
   AssignmentStatement = "assignmentStatement",
   BaseType = "baseType",
+  BitWithIntegerWidth = "bitWithIntegerWidth",
   BlockStatement = "blockStatement",
+  BracketAccessExpression = "bracketAccessExpression",
+  BracketColonExpression = "bracketColonExpression",
   ConditionalStatement = "conditionalStatement",
   ConstantDeclaration = "constantDeclaration",
   ControlDeclaration = "controlDeclaration",
-  ControlLocalDeclaration = "controlLocalDeclaration",
-  DerivedTypeDeclaration = "derivedTypeDeclaration",
   DirectApplication = "directApplication",
   Entry = "entry",
   ErrorDeclaration = "errorDeclaration",
@@ -216,7 +216,6 @@ export const enum SyntaxType {
   MatchKindDeclaration = "matchKindDeclaration",
   MethodCallStatement = "methodCallStatement",
   MethodPrototype = "methodPrototype",
-  Name = "name",
   NonTableKwName = "nonTableKwName",
   NonTypeName = "nonTypeName",
   Parameter = "parameter",
@@ -229,6 +228,7 @@ export const enum SyntaxType {
   PrefixedNonType = "prefixedNonType",
   PrefixedType = "prefixedType",
   PreprocInclude = "preproc_include",
+  PropertyAccessExpression = "propertyAccessExpression",
   RealTypeArg = "realTypeArg",
   RealTypeArgumentList = "realTypeArgumentList",
   SelectCase = "selectCase",
@@ -254,7 +254,6 @@ export const enum SyntaxType {
   TypeOrVoid = "typeOrVoid",
   TypeParameterList = "typeParameterList",
   TypeParameters = "typeParameters",
-  TypeRef = "typeRef",
   TypedefDeclaration = "typedefDeclaration",
   VariableDeclaration = "variableDeclaration",
   FALSE = "FALSE",
@@ -367,15 +366,15 @@ export type SyntaxNode =
   | AnnotationTokenNode
   | ArgumentNode
   | ArgumentListNode
-  | AssignmentOrMethodCallStatementNode
   | AssignmentStatementNode
   | BaseTypeNode
+  | BitWithIntegerWidthNode
   | BlockStatementNode
+  | BracketAccessExpressionNode
+  | BracketColonExpressionNode
   | ConditionalStatementNode
   | ConstantDeclarationNode
   | ControlDeclarationNode
-  | ControlLocalDeclarationNode
-  | DerivedTypeDeclarationNode
   | DirectApplicationNode
   | EntryNode
   | ErrorDeclarationNode
@@ -396,7 +395,6 @@ export type SyntaxNode =
   | MatchKindDeclarationNode
   | MethodCallStatementNode
   | MethodPrototypeNode
-  | NameNode
   | NonTableKwNameNode
   | NonTypeNameNode
   | ParameterNode
@@ -409,6 +407,7 @@ export type SyntaxNode =
   | PrefixedNonTypeNode
   | PrefixedTypeNode
   | PreprocIncludeNode
+  | PropertyAccessExpressionNode
   | RealTypeArgNode
   | RealTypeArgumentListNode
   | SelectCaseNode
@@ -434,7 +433,6 @@ export type SyntaxNode =
   | TypeOrVoidNode
   | TypeParameterListNode
   | TypeParametersNode
-  | TypeRefNode
   | TypedefDeclarationNode
   | VariableDeclarationNode
   | UnnamedNode<"\n">
@@ -562,7 +560,7 @@ export interface RemainderExpressionNode extends NamedNodeBase {
 export interface ActionDeclarationNode extends NamedNodeBase {
   type: SyntaxType.ActionDeclaration;
   actionBlockNode: BlockStatementNode;
-  nameNode: NameNode;
+  nameNode: IDENTIFIERNode;
   parameterListNode?: ParameterListNode;
 }
 
@@ -590,20 +588,31 @@ export interface ArgumentListNode extends NamedNodeBase {
   type: SyntaxType.ArgumentList;
 }
 
-export interface AssignmentOrMethodCallStatementNode extends NamedNodeBase {
-  type: SyntaxType.AssignmentOrMethodCallStatement;
-}
-
 export interface AssignmentStatementNode extends NamedNodeBase {
   type: SyntaxType.AssignmentStatement;
+  lhsNode: LvalueNode;
+  rhsNodes: (UnnamedNode<"!"> | UnnamedNode<"!="> | UnnamedNode<"&"> | UnnamedNode<"&&"> | UnnamedNode<"("> | UnnamedNode<")"> | UnnamedNode<"+"> | UnnamedNode<"++"> | UnnamedNode<"-"> | UnnamedNode<"."> | UnnamedNode<":"> | UnnamedNode<"<"> | UnnamedNode<"<<"> | UnnamedNode<"=="> | UnnamedNode<">"> | UnnamedNode<">>"> | UnnamedNode<"?"> | AdditionExpressionNode | DivisionExpressionNode | FALSENode | GreaterThanExpressionNode | GreaterThanOrEqualExpressionNode | IDENTIFIERNode | INTEGERNode | LessThanExpressionNode | LessThanOrEqualExpressionNode | MultiplicationExpressionNode | RemainderExpressionNode | TRUENode | UnnamedNode<"["> | UnnamedNode<"]"> | UnnamedNode<"^"> | ArgumentListNode | BaseTypeNode | ExpressionListNode | HeaderStackTypeNode | RealTypeArgumentListNode | SpecializedTypeNode | TupleTypeNode | TypeNameNode | UnnamedNode<"{"> | UnnamedNode<"|"> | UnnamedNode<"|+|"> | UnnamedNode<"|-|"> | UnnamedNode<"||"> | UnnamedNode<"}"> | UnnamedNode<"~">)[];
 }
 
 export interface BaseTypeNode extends NamedNodeBase {
   type: SyntaxType.BaseType;
 }
 
+export interface BitWithIntegerWidthNode extends NamedNodeBase {
+  type: SyntaxType.BitWithIntegerWidth;
+  widthNode: INTEGERNode;
+}
+
 export interface BlockStatementNode extends NamedNodeBase {
   type: SyntaxType.BlockStatement;
+}
+
+export interface BracketAccessExpressionNode extends NamedNodeBase {
+  type: SyntaxType.BracketAccessExpression;
+}
+
+export interface BracketColonExpressionNode extends NamedNodeBase {
+  type: SyntaxType.BracketColonExpression;
 }
 
 export interface ConditionalStatementNode extends NamedNodeBase {
@@ -613,24 +622,16 @@ export interface ConditionalStatementNode extends NamedNodeBase {
 export interface ConstantDeclarationNode extends NamedNodeBase {
   type: SyntaxType.ConstantDeclaration;
   initializerNode: InitializerNode;
-  nameNode: NameNode;
-  typeNode: TypeRefNode;
+  nameNode: IDENTIFIERNode;
+  typeNode: BaseTypeNode | HeaderStackTypeNode | SpecializedTypeNode | TupleTypeNode | TypeNameNode;
 }
 
 export interface ControlDeclarationNode extends NamedNodeBase {
   type: SyntaxType.ControlDeclaration;
   applyBlockNode: BlockStatementNode;
-  localDeclarationsNodes: ControlLocalDeclarationNode[];
-  nameNode: NameNode;
+  localDeclarationsNodes: (ActionDeclarationNode | ConstantDeclarationNode | InstantiationNode | TableDeclarationNode | VariableDeclarationNode)[];
+  nameNode: IDENTIFIERNode;
   parameterListNode: ParameterListNode;
-}
-
-export interface ControlLocalDeclarationNode extends NamedNodeBase {
-  type: SyntaxType.ControlLocalDeclaration;
-}
-
-export interface DerivedTypeDeclarationNode extends NamedNodeBase {
-  type: SyntaxType.DerivedTypeDeclaration;
 }
 
 export interface DirectApplicationNode extends NamedNodeBase {
@@ -667,7 +668,8 @@ export interface HeaderStackTypeNode extends NamedNodeBase {
 
 export interface HeaderTypeDeclarationNode extends NamedNodeBase {
   type: SyntaxType.HeaderTypeDeclaration;
-  nameNode: NameNode;
+  nameNode: IDENTIFIERNode;
+  structFieldsNodes: StructFieldNode[];
 }
 
 export interface IdentifierListNode extends NamedNodeBase {
@@ -708,14 +710,11 @@ export interface MatchKindDeclarationNode extends NamedNodeBase {
 
 export interface MethodCallStatementNode extends NamedNodeBase {
   type: SyntaxType.MethodCallStatement;
+  methodNameNode: LvalueNode;
 }
 
 export interface MethodPrototypeNode extends NamedNodeBase {
   type: SyntaxType.MethodPrototype;
-}
-
-export interface NameNode extends NamedNodeBase {
-  type: SyntaxType.Name;
 }
 
 export interface NonTableKwNameNode extends NamedNodeBase {
@@ -728,8 +727,8 @@ export interface NonTypeNameNode extends NamedNodeBase {
 
 export interface ParameterNode extends NamedNodeBase {
   type: SyntaxType.Parameter;
-  nameNode: NameNode;
-  typeRefNode: TypeRefNode;
+  nameNode: IDENTIFIERNode;
+  typeRefNode: BaseTypeNode | HeaderStackTypeNode | SpecializedTypeNode | TupleTypeNode | TypeNameNode;
 }
 
 export interface ParameterListNode extends NamedNodeBase {
@@ -766,6 +765,10 @@ export interface PrefixedTypeNode extends NamedNodeBase {
 
 export interface PreprocIncludeNode extends NamedNodeBase {
   type: SyntaxType.PreprocInclude;
+}
+
+export interface PropertyAccessExpressionNode extends NamedNodeBase {
+  type: SyntaxType.PropertyAccessExpression;
 }
 
 export interface RealTypeArgNode extends NamedNodeBase {
@@ -806,13 +809,13 @@ export interface StateExpressionNode extends NamedNodeBase {
 
 export interface StructFieldNode extends NamedNodeBase {
   type: SyntaxType.StructField;
-  nameNode: NameNode;
-  typeRefNode: TypeRefNode;
+  nameNode: IDENTIFIERNode;
+  typeRefNode: BaseTypeNode | HeaderStackTypeNode | SpecializedTypeNode | TupleTypeNode | TypeNameNode;
 }
 
 export interface StructTypeDeclarationNode extends NamedNodeBase {
   type: SyntaxType.StructTypeDeclaration;
-  nameNode: NameNode;
+  nameNode: IDENTIFIERNode;
   structFieldsNodes: StructFieldNode[];
 }
 
@@ -872,12 +875,9 @@ export interface TypeParametersNode extends NamedNodeBase {
   type: SyntaxType.TypeParameters;
 }
 
-export interface TypeRefNode extends NamedNodeBase {
-  type: SyntaxType.TypeRef;
-}
-
 export interface TypedefDeclarationNode extends NamedNodeBase {
   type: SyntaxType.TypedefDeclaration;
+  nameNode: IDENTIFIERNode;
 }
 
 export interface VariableDeclarationNode extends NamedNodeBase {
